@@ -1,6 +1,8 @@
 ---
 description: Check whether an article provides evidence that is usable for the handbook
 ---
+# Background
+
 We aim at creating a handbook that helps software teams cope with culture-induced difficulties
 with their Scrum process.
 
@@ -16,6 +18,8 @@ Whatever the exact relationships may be (the above is not intended as claims of 
 we are looking for articles describing phenomena in Scrum software teams that MIGHT be
 created or furthered by cultural properties.
 
+# Aim
+
 So we are looking for software engineering articles (scientific or high-quality practitioner literature)
 with the following properties:
 - Talks about the work of a specific Scrum team
@@ -26,6 +30,8 @@ with the following properties:
   to culture-induced behavioral tendencies.
 
 We say such an article contains "Scrum-and-culture information".
+
+# Task
 
 Your task is this:
 - Given the text of such an article, decide whether it contains, possibly contains,
@@ -50,5 +56,10 @@ Your task is this:
 In our experience, few articles contain Scrum-and-culture information, so the
 "does not contain" case will likely be frequent.
 
-The skill call will be followed either by a filename (then read the article from that file)
-or lots of text (which is then the article text).
+# Call format and behavior
+
+The call of the present skill will be followed by a pathname, let us assume it is `myfile.pdf`.
+Read `myfile.pdf` as the article text.
+Do not read other files.
+Write your response (as specified above) to `myfile-screening.md` in a nice Markdown format.
+Include an APA-style literature reference (possibly incomplete) for the article at the top.
