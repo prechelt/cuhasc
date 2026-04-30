@@ -57,3 +57,12 @@ A simple webapp with which software teams can determine their culture profile.
 - Cuhasc is distributed as a single file
 - It will often be run on a developer's development machine.
 - ...
+
+
+## Method details
+
+### Scales to be used for the CVscale items
+
+Long-term orientation: 1 = “very unimportant” to 5 = “very important” 
+
+All others: 1 = “strongly disagree” to 5 = “strongly agree”
