@@ -6,19 +6,19 @@ A simple webapp with which software teams can determine their culture profile.
 
 ### Roles
 
-- Culture Lead: The person starting, leading, and moderating the process. Often the Scrum Master.
+- Culture Lead: The person starting, leading, and moderating the process. (Often the Scrum Master.)
 - Team Member: Any person in the software development team, including the Culture Lead.
 - Team: The set of all Team Members.
 
 ### Overview Usecase
 
-1. Culture Lead sets up a Culture Profiling process in Cuhasc.
-2. Cuhasc provides a URL for the Team Members to use
+1. Culture Lead sets up a Culture Profiling process for one new Team in Cuhasc.
+2. Cuhasc provides a joint URL for the Team Members to use
 3. Culture Lead sends URL to all Team Members
-4. Each Team Member visits URL and fills in the Culture Profile questionnaire.
-5. Cuhasc computes the culture profile
-6. Culture Lead shows and explain the culture profile to the Team
-(7. Cuhasc consults Team about likely consequences of its Culture Profile)
+4. Each Team Member visits URL and fills in the Culture Profile Questionnaire.
+5. Cuhasc computes the member's Culture Profile
+6. Culture Lead shows and explains the Overall Culture Profile to the Team
+(7. Cuhasc advises Team about likely consequences of its Overall Culture Profile)
 
 ### Usecase: Set up Culture Profiling
 
@@ -32,13 +32,43 @@ A simple webapp with which software teams can determine their culture profile.
 
 1. Team Member receives the Team-URL and visits it
 2. Cuhasc shows Team name, asks for member name (or member pseudonym)
-3. Cuhasc shows Culture Questionnaire
-4. Team Member fills Culture Questionnaire
+3. Cuhasc shows Culture Profile Questionnaire
+4. Team Member fills in Culture Profile Questionnaire
+5. Cuhasc stores member identity in cookie so the Team Member can revisit their data
 
 ### Usecase: View Culture Profile
 
 ...
 
+
+## Analysis Model (to be moved farther down)
+
+```
+CultureLead
+    name: str
+    associates Team
+
+TeamMember
+    name: str
+    associates Team
+
+Team
+    name: str
+    associates TeamMembers
+    associates CultureProfileQuestionnaire
+    associates OverallCultureProfile
+
+CultureProfile
+    associates TeamMember
+    remembered via a cookie
+
+CultureProfileQuestionnaire
+    questions: list
+
+OverallCultureProfile
+    (aggregates the team's CultureProfiles)
+
+```
 
 ## Non-Functional Requirements
 
