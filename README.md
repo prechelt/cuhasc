@@ -96,3 +96,13 @@ OverallCultureProfile
 Long-term orientation: 1 = “very unimportant” to 5 = “very important” 
 
 All others: 1 = “strongly disagree” to 5 = “strongly agree”
+
+
+## Next development steps
+
+- Create link to "Create Team" page
+- Create view for "Create Team" page GET
+- TeamForm  NEXT: from here upwards
+- migration for Team model
+- CuhascCookie
+- 
