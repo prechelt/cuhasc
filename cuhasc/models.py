@@ -1,3 +1,8 @@
 from django.db import models
 
-# Create your models here.
+import constants as c
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=100)
+    token = models.CharField(max_length=c.TOKEN_LENGTH_TEAM)
