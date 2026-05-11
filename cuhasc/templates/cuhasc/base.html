@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      document.documentElement.setAttribute('data-bs-theme', mq.matches ? 'dark' : 'light');
+      mq.addEventListener('change', e => document.documentElement.setAttribute('data-bs-theme', e.matches ? 'dark' : 'light'));
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}cuhasc{% endblock %}</title>
