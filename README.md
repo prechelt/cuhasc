@@ -100,9 +100,11 @@ All others: 1 = “strongly disagree” to 5 = “strongly agree”
 
 ## Next development steps
 
-- Create link to "Create Team" page
-- Create view for "Create Team" page GET
-- TeamForm  NEXT: from here upwards
-- migration for Team model
+- "Team created" page
 - CuhascCookie
+- Model for TeamMember
+- Model for QResult
+- Form for QResult
+- View for QResult
+- I18N (discussion)
 - 
