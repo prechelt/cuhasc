@@ -107,4 +107,10 @@ All others: 1 = “strongly disagree” to 5 = “strongly agree”
 - Form for QResult
 - View for QResult
 - I18N (discussion)
-- 
+
+## Next step
+
+Create a view team_created. Redirect a successful POST from team_create to this view. 
+Use the URL /team_created/{id}/{token}, where id is the id of the just-created Team and token is its token.
+Render the page based on templates/cuhasc/team_created.html.
+This template should show the following link: /team_member/{id}/{token}.
