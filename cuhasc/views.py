@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseNotAllowed
 
 from cuhasc.forms import TeamForm
+from cuhasc.models import Team
 
 
 def home(request):
@@ -15,8 +16,13 @@ def create_team(request):
     elif request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('home')
+            team = form.save()
+            return redirect('show_team', id=team.id, token=team.token)
         return render(request, "cuhasc/create_team.html", {'form': form})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+def show_team(request, id, token):
+    team = get_object_or_404(Team, id=id, token=token)
+    return render(request, "cuhasc/show_team.html", {'team': team})
