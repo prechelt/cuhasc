@@ -41,26 +41,25 @@ A simple webapp with which software teams can determine their culture profile.
 ...
 
 
-## Analysis Model (to be moved farther down)
+## Analysis Model
 
 ```
 CultureLead
     name: str
     associates Team
 
-TeamMember
+Member
     name: str
     associates Team
 
 Team
     name: str
-    associates TeamMembers
+    associates Members
     associates CultureProfileQuestionnaire
     associates OverallCultureProfile
 
 CultureProfile
-    associates TeamMember
-    remembered via a cookie
+    associates Member
 
 CultureProfileQuestionnaire
     questions: list
@@ -75,7 +74,6 @@ OverallCultureProfile
 - Cuhasc runs on any Linux, Windows or macOS system that has Python 3 installed. 
 
 
-
 ## Architecture
 
 - Cuhasc is based on Python and Django
@@ -86,8 +84,6 @@ OverallCultureProfile
   Rather, it relies on random tokens for authorization, 
   on the distribution of unguessable URLs via email for group formation, and
   on a cookie for keeping track of the unguessable URLs pertaining to a user.
-- ...
-
 
 
 ## Deployment
@@ -108,8 +104,10 @@ All others: 1 = “strongly disagree” to 5 = “strongly agree”
 
 ## Next development steps
 
+- `create_team`: store into cookie 
+- all views: read cookie if it exists
+- `edit_team`: like `create_team`
 - `create_member`, `show_member`, `edit_member`
-- `edit_team`
 - Model for `QResult`
 - Form for `QResult`
 - View for `QResult`
