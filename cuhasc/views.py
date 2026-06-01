@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseNotAllowed
 
+from cuhasc.cookies import CuhascCookie
 from cuhasc.forms import TeamForm
 from cuhasc.models import Team
+import cuhasc.constants as c
 
 
 def home(request):
@@ -17,7 +19,11 @@ def create_team(request):
         form = TeamForm(request.POST)
         if form.is_valid():
             team = form.save()
-            return redirect('show_team', id=team.id, token=team.token)
+            cookie = CuhascCookie(request)
+            cookie.add(team)
+            response = redirect('show_team', id=team.id, token=team.token)
+            response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
+            return response
         return render(request, "cuhasc/create_team.html", {'form': form})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
