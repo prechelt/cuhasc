@@ -1,9 +1,9 @@
 {% extends "cuhasc/base.html" %}
 
-{% block title %}Team {{ team.name }}{% endblock %}
+{% block title %}Team "{{ team.name }}"{% endblock %}
 
 {% block content %}
-<h1>Team {{ team.name }}</h1>
+<h1>Team "{{ team.name }}"</h1>
 <p>Share this link with your team members:</p>
 <a href="{% url 'create_member' team.id team.member_token %}">{% url 'create_member' team.id team.member_token %}</a>
 {% endblock %}

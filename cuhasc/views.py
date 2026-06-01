@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseNotAllowed
 
 from cuhasc.cookies import CuhascCookie
-from cuhasc.forms import TeamForm
-from cuhasc.models import Team
+from cuhasc.forms import MemberForm, TeamForm
+from cuhasc.models import Member, Team
 import cuhasc.constants as c
 
 
@@ -36,3 +36,59 @@ def create_team(request):
 def show_team(request, id, token):
     team = get_object_or_404(Team, id=id, token=token)
     return render(request, "cuhasc/show_team.html", {'team': team})
+
+
+def edit_team(request, id, token):
+    team = get_object_or_404(Team, id=id, token=token)
+    if request.method == 'GET':
+        form = TeamForm(instance=team)
+        return render(request, "cuhasc/edit_team.html", {'form': form, 'team': team})
+    elif request.method == 'POST':
+        form = TeamForm(request.POST, instance=team)
+        if form.is_valid():
+            form.save()
+            return redirect('show_team', id=team.id, token=team.token)
+        return render(request, "cuhasc/edit_team.html", {'form': form, 'team': team})
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+def create_member(request, team_id, member_token):
+    team = get_object_or_404(Team, id=team_id, member_token=member_token)
+    if request.method == 'GET':
+        form = MemberForm()
+        return render(request, "cuhasc/create_member.html", {'form': form, 'team': team})
+    elif request.method == 'POST':
+        form = MemberForm(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.team = team
+            member.save()
+            cookie = CuhascCookie(request)
+            cookie.add(member)
+            response = redirect('show_member', id=member.id, token=member.token)
+            response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
+            return response
+        return render(request, "cuhasc/create_member.html", {'form': form, 'team': team})
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+def show_member(request, id, token):
+    member = get_object_or_404(Member, id=id, token=token)
+    return render(request, "cuhasc/show_member.html", {'member': member})
+
+
+def edit_member(request, id, token):
+    member = get_object_or_404(Member, id=id, token=token)
+    if request.method == 'GET':
+        form = MemberForm(instance=member)
+        return render(request, "cuhasc/edit_member.html", {'form': form, 'member': member})
+    elif request.method == 'POST':
+        form = MemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            return redirect('show_member', id=member.id, token=member.token)
+        return render(request, "cuhasc/edit_member.html", {'form': form, 'member': member})
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])

@@ -1,0 +1,9 @@
+{% extends "cuhasc/base.html" %}
+
+{% block title %}Member {{ member.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ member.name }}</h1>
+<p>Team: {{ member.team.name }}</p>
+<a href="{% url 'edit_member' member.id member.token %}">Edit your profile</a>
+{% endblock %}
