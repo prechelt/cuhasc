@@ -2,5 +2,17 @@
 
 {% block content %}
 <h1>CuHaSc: Culture Handbook for Scrum</h1>
+
+<h2>Teams</h2>
 <a href="{% url 'create_team' %}">Create new team</a>
+{% for team in teams %}
+<br><a href="{{ team.url }}">{{ team.name }}</a>
+{% endfor %}
+
+{% if members %}
+<h2>Team members</h2>
+{% for member in members %}
+<br><a href="{{ member.url }}">{{ member.name }}</a>
+{% endfor %}
+{% endif %}
 {% endblock %}

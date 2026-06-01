@@ -8,7 +8,11 @@ import cuhasc.constants as c
 
 
 def home(request):
-    return render(request, "cuhasc/home.html")
+    cookie = CuhascCookie(request)
+    return render(request, "cuhasc/home.html", {
+        'teams': cookie.teams,
+        'members': cookie.members,
+    })
 
 
 def create_team(request):
