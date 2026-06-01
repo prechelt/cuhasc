@@ -104,14 +104,12 @@ All others: 1 = “strongly disagree” to 5 = “strongly agree”
 
 ## Next development steps
 
-- `create_team`: store into cookie 
-- all views: read cookie if it exists
-- `edit_team`: like `create_team`
-- `create_member`, `show_member`, `edit_member`
+- Test `create_member`, `show_member`, `edit_member`
 - Model for `QResult`
 - Form for `QResult`
 - View for `QResult`
 - I18N (discussion)
+- NOT NEEDED: forbid cookie separators in names
 
 ## Next development steps details
 
