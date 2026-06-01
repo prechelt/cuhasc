@@ -13,7 +13,8 @@ class CuhascCookie:
         response.set_cookie(COOKIE_NAME, cookie.cookietext)
     """
 
-    SEP = '\t'
+    FIELD_SEP = '^;'
+    RECORD_SEP = '^|'
 
     def __init__(self, request):
         self._request = request
@@ -22,7 +23,7 @@ class CuhascCookie:
 
     def _parse(self, text):
         for line in text.splitlines():
-            parts = line.strip().split(self.SEP)
+            parts = line.strip().split(self.FIELD_SEP)
             if len(parts) == 3:
                 modeltype, id_str, token = parts
                 try:
@@ -37,8 +38,8 @@ class CuhascCookie:
     @property
     def cookietext(self):
         """Serialize cookie as newline-separated 'modeltype;id;token' lines."""
-        s = self.SEP
-        return '\n'.join(f"{mt}{s}{id}{s}{tok}" for (mt, id), tok in self._entries.items())
+        s = self.FIELD_SEP
+        return self.RECORD_SEP.join(f"{mt}{s}{id}{s}{tok}" for (mt, id), tok in self._entries.items())
 
     @property
     def teams(self):
