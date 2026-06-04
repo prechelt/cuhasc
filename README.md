@@ -95,40 +95,14 @@ OverallCultureProfile
 
 ## Method details
 
-### Scales to be used for the CVscale items
-
-Long-term orientation: 1 = “very unimportant” to 5 = “very important” 
-
-All others: 1 = “strongly disagree” to 5 = “strongly agree”
-
+--
 
 ## Next development steps
 
-- scales.csv, cvscale.tsv
-- Model for `QResult`
-- Form for an entire questionnaire set of `QResult`
-- View for `QResult` (extension of create_member/edit_member)
 - I18N (discussion)
 - show_team must display an absolute URL with host/port
 - NOT NEEDED: forbid cookie separators in names
 
-## Next development steps details
-
---
 
 ## Next step
 
-Next we want to extend create_member and edit_member by a questionnaire form (below what is already there).
-The questionnaire to be used is that from cvscale.tsv, but we want to be able to use arbitrary questionnaires with the
-mechanism we will build, so make this a parameter.
-
-Column "Scale" in cvscale.tsv refers to a row from the semicolon-separated scales.csv:
-column 1 is the scale name, column2 is the number of levels of this (ordinal) scale, columns 3 and up are the text labels
-for these levels (many of them blank).
-
-The form, called QuestionnaireForm, should show these text labels at radio buttons displayed horizontally.
-The data values returned by these radio buttons are always 1, 2, 3...
-Create a Model QResult that stores member, Item name, scale name, and response scale value for one questionnaire item.
-Build a Form dynamically with as many items as rows in the questionnaire file (cvscale.tsv in our case).
-Each item is mandatory.
-Store questionnaire results in QResult rows in the database.
