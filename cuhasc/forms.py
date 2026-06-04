@@ -21,11 +21,11 @@ class QuestionnaireForm(forms.Form):
         self._items = items
         for item_data in items:
             labels = scales[item_data['scale']]
-            choices = [(str(i + 1), label or str(i + 1)) for i, label in enumerate(labels)]
+            choices = [(str(i + 1), label) for i, label in enumerate(labels)]
             self.fields[item_data['item']] = forms.ChoiceField(
                 choices=choices,
                 widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
-                label=f"{item_data['item']}: {item_data['content']}",
+                label=item_data['content'],
             )
 
     def save_results(self, member):
