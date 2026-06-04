@@ -32,3 +32,13 @@ class Member(models.Model):
         super().save(*args, **kwargs)
 
 
+class QResult(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='qresults')
+    item = models.CharField(max_length=20)
+    scale = models.CharField(max_length=50)
+    value = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = [('member', 'item')]
+
+
