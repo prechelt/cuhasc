@@ -2,9 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseNotAllowed
 
 from cuhasc.cookies import CuhascCookie
-from cuhasc.forms import MemberForm, TeamForm
+from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
+from cuhasc.instruments import load_scales, load_questionnaire, INSTRUMENTS_DIR
 from cuhasc.models import Member, Team
 import cuhasc.constants as c
+
+_scales = load_scales()
+_cvscale_items = load_questionnaire(INSTRUMENTS_DIR / 'cvscale.tsv')
 
 
 def home(request):
@@ -57,19 +61,24 @@ def create_member(request, team_id, member_token):
     team = get_object_or_404(Team, id=team_id, member_token=member_token)
     if request.method == 'GET':
         form = MemberForm()
-        return render(request, "cuhasc/create_member.html", {'form': form, 'team': team})
+        qform = QuestionnaireForm(_cvscale_items, _scales)
+        return render(request, "cuhasc/create_member.html",
+                      {'form': form, 'qform': qform, 'team': team})
     elif request.method == 'POST':
         form = MemberForm(request.POST)
-        if form.is_valid():
+        qform = QuestionnaireForm(_cvscale_items, _scales, request.POST)
+        if form.is_valid() and qform.is_valid():
             member = form.save(commit=False)
             member.team = team
             member.save()
+            qform.save_results(member)
             cookie = CuhascCookie(request)
             cookie.add(member)
             response = redirect('show_member', id=member.id, token=member.token)
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
-        return render(request, "cuhasc/create_member.html", {'form': form, 'team': team})
+        return render(request, "cuhasc/create_member.html",
+                      {'form': form, 'qform': qform, 'team': team})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
@@ -83,12 +92,18 @@ def edit_member(request, id, token):
     member = get_object_or_404(Member, id=id, token=token)
     if request.method == 'GET':
         form = MemberForm(instance=member)
-        return render(request, "cuhasc/edit_member.html", {'form': form, 'member': member})
+        existing = {qr.item: str(qr.value) for qr in member.qresults.all()}
+        qform = QuestionnaireForm(_cvscale_items, _scales, initial=existing)
+        return render(request, "cuhasc/edit_member.html",
+                      {'form': form, 'qform': qform, 'member': member})
     elif request.method == 'POST':
         form = MemberForm(request.POST, instance=member)
-        if form.is_valid():
+        qform = QuestionnaireForm(_cvscale_items, _scales, request.POST)
+        if form.is_valid() and qform.is_valid():
             form.save()
+            qform.save_results(member)
             return redirect('show_member', id=member.id, token=member.token)
-        return render(request, "cuhasc/edit_member.html", {'form': form, 'member': member})
+        return render(request, "cuhasc/edit_member.html",
+                      {'form': form, 'qform': qform, 'member': member})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])

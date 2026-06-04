@@ -7,6 +7,23 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Join</button>
+    <h2 class="mt-4">Questionnaire</h2>
+    {% for item_field in qform %}
+    <div class="mb-3">
+        <div class="fw-semibold mb-1">{{ item_field.label }}</div>
+        {% if item_field.errors %}
+        <div class="text-danger small">{{ item_field.errors }}</div>
+        {% endif %}
+        <div class="d-flex flex-wrap gap-3">
+            {% for radio in item_field %}
+            <div class="form-check form-check-inline">
+                {{ radio.tag }}
+                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary mt-2">Join</button>
 </form>
 {% endblock %}
