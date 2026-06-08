@@ -1,7 +1,17 @@
+from dataclasses import dataclass, asdict
+import json
+
 from django.urls import reverse
 
 from cuhasc.models import Member, Team
 import cuhasc.constants as c
+
+
+@dataclass
+class Role:
+    classname: str
+    id: int
+    token: str
 
 
 class CuhascCookie:
@@ -13,33 +23,46 @@ class CuhascCookie:
         response.set_cookie(COOKIE_NAME, cookie.cookietext)
     """
 
-    FIELD_SEP = '^;'
-    RECORD_SEP = '^|'
-
     def __init__(self, request):
         self._request = request
-        self._entries = {}  # (modeltype_str, id) -> token
+        self._roles: dict[tuple[str, int], Role] = {}
+        self._language: str | None = None
         self._parse(request.COOKIES.get(c.COOKIE_NAME, ''))
 
     def _parse(self, text):
-        for line in text.splitlines():
-            parts = line.strip().split(self.FIELD_SEP)
-            if len(parts) == 3:
-                modeltype, id_str, token = parts
-                try:
-                    self._entries[(modeltype, int(id_str))] = token
-                except ValueError:
-                    pass
+        if not text:
+            return
+        try:
+            data = json.loads(text)
+        except (json.JSONDecodeError, TypeError):
+            return
+        for entry in data.get('roles', []):
+            try:
+                role = Role(classname=entry['classname'], id=int(entry['id']), token=entry['token'])
+                self._roles[(role.classname, role.id)] = role
+            except (KeyError, ValueError):
+                pass
+        lang = data.get('language')
+        if isinstance(lang, str):
+            self._language = lang
 
     def add(self, obj):
         """Add a Team or Member to the cookie."""
-        self._entries[(type(obj).__name__, obj.id)] = obj.token
+        role = Role(classname=type(obj).__name__, id=obj.id, token=obj.token)
+        self._roles[(role.classname, role.id)] = role
+
+    def set_language(self, lang: str):
+        self._language = lang
+
+    def get_language(self) -> str | None:
+        return self._language
 
     @property
-    def cookietext(self):
-        """Serialize cookie as newline-separated 'modeltype;id;token' lines."""
-        s = self.FIELD_SEP
-        return self.RECORD_SEP.join(f"{mt}{s}{id}{s}{tok}" for (mt, id), tok in self._entries.items())
+    def cookietext(self) -> str:
+        data: dict = {'roles': [asdict(r) for r in self._roles.values()]}
+        if self._language is not None:
+            data['language'] = self._language
+        return json.dumps(data)
 
     @property
     def teams(self):
@@ -51,11 +74,11 @@ class CuhascCookie:
         Requires the edit_team URL to be registered; raises NoReverseMatch until then.
         """
         result = []
-        for (modeltype, obj_id), token in self._entries.items():
-            if modeltype != 'Team':
+        for role in self._roles.values():
+            if role.classname != 'Team':
                 continue
             try:
-                team = Team.objects.get(id=obj_id, token=token)
+                team = Team.objects.get(id=role.id, token=role.token)
             except Team.DoesNotExist:
                 continue
             team.url = reverse('edit_team', args=[team.id, team.token])
@@ -73,11 +96,11 @@ class CuhascCookie:
         Requires the edit_member URL to be registered; raises NoReverseMatch until then.
         """
         result = []
-        for (modeltype, obj_id), token in self._entries.items():
-            if modeltype != 'Member':
+        for role in self._roles.values():
+            if role.classname != 'Member':
                 continue
             try:
-                member = Member.objects.get(id=obj_id, token=token)
+                member = Member.objects.get(id=role.id, token=role.token)
             except Member.DoesNotExist:
                 continue
             member.url = reverse('edit_member', args=[member.id, member.token])
