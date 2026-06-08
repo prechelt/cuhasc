@@ -6,3 +6,5 @@ Project-specific conventions:
 - Declare parameter and result types for functions
 - ...
 
+Behavior conventions:
+- If any substantial design aspect is ambiguous, discuss it with me.
