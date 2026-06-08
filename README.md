@@ -100,7 +100,6 @@ OverallCultureProfile
 ## Next development steps
 
 - Internationalization/Localization (I18N/L10N)
-  - language=de  in cookie
   - cvscale.tsv -> cvscale-en.tsv
   - scales.csv -> scales-en.csv
   - instruments.py: load_scales(glob), load_questionnaires(glob), get_languages(), 
@@ -115,3 +114,17 @@ OverallCultureProfile
 
 ## Next step
 
+We want to perform I18N for the questionnaires. Do the following: 
+1. Rename cvscale.tsv into cvscale-en.tsv. We will have many variants in different languages and
+   the parts after the dash will form our languages list.
+2. Rename scales.csv into scales-en.csv. Ditto. If the two languages lists thus formed are different,
+   use their intersection.
+3. in instruments.py, change load_scales(path) into load_scales(glob). Evaluate the glob pattern,
+   read each file that matches. Extract the language from the filename as a possible entry for the languages list.
+   Store the contents in a dictionary _scales (from ISO code to scales object) as a global variable.
+4. change load_questionnaire(path) into load_questionnaires(glob) likewise. Global variable is _questionnaires.
+5. introduce get_languages() that returns the intersection of the sets of language codes of these two.
+6. Introduce a dataclass Item with fields (item, scale, content). 
+7. add get_questionnaire(language) for retrieving a questionnaire as a list of Items. 
+8. views.py: Eliminate _scales and _cvscale_items. Move the respective initialization to instruments.py.
+   Modify the uses of these variables to call instruments.py instead.

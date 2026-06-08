@@ -19,20 +19,20 @@ class QuestionnaireForm(forms.Form):
     def __init__(self, items, scales, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._items = items
-        for item_data in items:
-            labels = scales[item_data['scale']]
+        for item in items:
+            labels = scales[item.scale]
             choices = [(str(i + 1), label) for i, label in enumerate(labels)]
-            self.fields[item_data['item']] = forms.ChoiceField(
+            self.fields[item.item] = forms.ChoiceField(
                 choices=choices,
                 widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
-                label=item_data['content'],
+                label=item.content,
             )
 
     def save_results(self, member):
-        for item_data in self._items:
-            value = int(self.cleaned_data[item_data['item']])
+        for item in self._items:
+            value = int(self.cleaned_data[item.item])
             QResult.objects.update_or_create(
                 member=member,
-                item=item_data['item'],
-                defaults={'scale': item_data['scale'], 'value': value},
+                item=item.item,
+                defaults={'scale': item.scale, 'value': value},
             )

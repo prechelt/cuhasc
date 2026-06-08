@@ -3,12 +3,9 @@ from django.http import HttpResponseNotAllowed
 
 from cuhasc.cookies import CuhascCookie
 from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
-from cuhasc.instruments import load_scales, load_questionnaire, INSTRUMENTS_DIR
+import cuhasc.instruments as instruments
 from cuhasc.models import Member, Team
 import cuhasc.constants as c
-
-_scales = load_scales()
-_cvscale_items = load_questionnaire(INSTRUMENTS_DIR / 'cvscale.tsv')
 
 
 def home(request):
@@ -61,12 +58,12 @@ def create_member(request, team_id, member_token):
     team = get_object_or_404(Team, id=team_id, member_token=member_token)
     if request.method == 'GET':
         form = MemberForm()
-        qform = QuestionnaireForm(_cvscale_items, _scales)
+        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'))
         return render(request, "cuhasc/create_member.html",
                       {'form': form, 'qform': qform, 'team': team})
     elif request.method == 'POST':
         form = MemberForm(request.POST)
-        qform = QuestionnaireForm(_cvscale_items, _scales, request.POST)
+        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'), request.POST)
         if form.is_valid() and qform.is_valid():
             member = form.save(commit=False)
             member.team = team
@@ -93,12 +90,12 @@ def edit_member(request, id, token):
     if request.method == 'GET':
         form = MemberForm(instance=member)
         existing = {qr.item: str(qr.value) for qr in member.qresults.all()}
-        qform = QuestionnaireForm(_cvscale_items, _scales, initial=existing)
+        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'), initial=existing)
         return render(request, "cuhasc/edit_member.html",
                       {'form': form, 'qform': qform, 'member': member})
     elif request.method == 'POST':
         form = MemberForm(request.POST, instance=member)
-        qform = QuestionnaireForm(_cvscale_items, _scales, request.POST)
+        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'), request.POST)
         if form.is_valid() and qform.is_valid():
             form.save()
             qform.save_results(member)
