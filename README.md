@@ -99,9 +99,18 @@ OverallCultureProfile
 
 ## Next development steps
 
-- I18N (discussion)
+- Internationalization/Localization (I18N/L10N)
+  - language=de  in cookie
+  - cvscale.tsv -> cvscale-en.tsv
+  - scales.csv -> scales-en.csv
+  - instruments.py: load_scales(glob), load_questionnaires(glob), get_languages(), 
+    get_questionnaire(name, language) 
+  - translate cvscale
+  - translate scales
+- load_scales() should check consistency of 'levels' with actual number of levels.
 - show_team must display an absolute URL with host/port
 - NOT NEEDED: forbid cookie separators in names
+- add 'version' in cookie?
 
 
 ## Next step
