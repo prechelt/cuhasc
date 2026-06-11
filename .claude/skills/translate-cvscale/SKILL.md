@@ -1,18 +1,19 @@
 ---
-description: Translate a CVSCALE questionnaire tsv file from English into some other language
+description: Translate a CVscale questionnaire tsv file from English into some other language
 ---
 
-Usage e.g. /translate-cvscale cvscale-en.tsv cvscale-de.tsv
+Usage e.g. `/translate-cvscale cvscale-en.tsv cvscale-de.tsv`
 
 
 # Overall meaning
 
-Translate the contents of the existing input file cvscale-en.tsv ('en' is the ISO code for English,
+Translate the contents of the existing input file `cvscale-en.tsv` ('en' is the ISO code for English,
 the source language)
-and write the not-yet-existing output file cvscale-de.tsv in the target language German,
+and write the not-yet-existing output file `cvscale-de.tsv` in the target language German,
 recognizing the target language by the ISO code 'de' for Deutsch/German in the target file name.
+Both files live in the `instruments/` directory.
 
-The input file codifies the CVSCALE questionnaire for determining a person's profile 
+The input file codifies the original CVscale questionnaire for determining a person's profile 
 with respect to the five Hofstede cultural values dimensions.
 
 
@@ -20,12 +21,13 @@ with respect to the five Hofstede cultural values dimensions.
 
 Input and output file use the same tab-separated values (tsv) format with three columns
 Item, Scale, Content (as declared by the header row, which remains untranslated).
+The capital letters indicate the column names.
 
 In each row (called "item"), Item and Scale remain untranslated.
 Your task is translating each item, which specifically means translating its Content.
 
-Item consists of a group code and a number, e.g.,
-Items PO1, PO2, PO3, PO4, PO5 together form group PO, which stands for the items 
+Each Item consists of a group code and a number, e.g.,
+The Items PO1, PO2, PO3, PO4, PO5 together form group PO, which stands for the items 
 of the Power Distance dimension.
 
 There are five such groups:
@@ -38,17 +40,22 @@ MA: Masculinity (vs. Femininity).
 
 # Translation rules
 
-When translating, always keep in mind the purpose of the items: Characterizing a preference
+When translating, always keep in mind the purpose of the items: Characterizing a person's preference
 along one of the Hofstede dimensions, namely the one that is designated by the group.
+
+Respondents answer each item on a five point scale.
+For LT, this scale runs from 'very unimportant' to 'very important'.
+For PO, UN, CO, and MA, it runs from 'strongly disagree' to 'strongly agree'.
 
 Whenever you can think of two different translations A and B for the item,
 apply the following rules for deciding which is better:
 
 SEM: If A is closer to the semantic field of the group than B, use A.
+The goal is that the sentence meaning stays within the dimension's conceptual scope.
 
-AMB: If B posesses an ambiguity that is not present in the source language version of the item, use A.
+AMB: If B posesses an ambiguity (of whichever type) that is not present in the source language version of the item, use A.
 
-LAM: If B lacks an ambiguity that is present in the source language version of the item, use A.
+LAM: If B lacks an ambiguity (of whichever type) that is present in the source language version of the item, use A.
 
 CON: Use whichever is closer to the source language version in terms of direction and strength 
 of the positivity or negativity of its connotation, if any.
@@ -56,8 +63,15 @@ of the positivity or negativity of its connotation, if any.
 UNI: If several items in a group refer to the same concept and use the same word or word stem for it
 in the source language, the translated items should also have this uniformity property.
 
+In case you cannot follow all rules at once for a given item, use your best judgment.
+
 Use the perspective of a native speaker of the source language for the source language version
 and the perspective of a native speaker of the target language for the translated version.
+
+If gender cannot be kept invisible, go for a gender-neutral form.
+Keep the overall form of the Content as a complete sentence vs. a mere phrase.
+Translate parenthetical glosses, if any.
+
 
 
 # Reporting
