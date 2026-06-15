@@ -99,15 +99,12 @@ OverallCultureProfile
 
 ## Next development steps
 
-- Internationalization/Localization (I18N/L10N)
-  - /translate-cvscale skill
-  - QA on the skill definition (precision of terms and their use)
-  - translate cvscale-en to German and Polish (use GPT-5.4)
-  - manual QA on the outcomes
-  - /review-cvscale-translation skill
-  - AI-driven QA on the outcomes (GPT-5.4, Opus)
-  - translate scales
-  - add language selection pulldown:
+- /review-cvscale-translation by GPT-5.4 and Sonnet 4.6 -> 
+  git show 186580bf     after review by GPT 5.4
+  git show b942053b1    after review by Sonnet 4.6
+- translate scales  -> scales-de.csv
+- install Matt Pocock skills
+- add language selection pulldown:
     - language mapping (i18n.py): code -> (name, rtl_flag)
     - URL param (sets cookie), fallback to cookie, fallback to English
     - using pulldown -> write cookie, refresh
@@ -119,3 +116,24 @@ OverallCultureProfile
 
 ## Next step
 
+We have two functional areas open:
+
+1. L10N of the questionnaire forms based on the `i18n.py` module and the different language versions
+of `cvscale-*.tsv` and `scales-*.csv` in `instruments/`: 
+The respective forms pages should show a language selector pulldown at the top. 
+Using it should immediately update the page with the questionnare (but not the rest of the page)
+in the chosen language. 
+The setting is also stored in the cookie and used as the default for future visits of any such page.
+
+2. Questionnaire evaluation and display at the individual level and team level.
+Individual evaluation means computing the mean for each items group of QResults, resulting in 5 values in the
+interval [1,5].
+Displaying this means showing a plot with an [1,5] x-axis
+and five thin gray lines with x=1..5 at y=1 to y=5 that each show one fat blue dot for the user's group mean
+for that group and show a group (Hofstede dimension) label.
+Team evaluation means collecting the individual evaluations for all members of a team.
+Displaying this means showing a plot like for individuals but with a smaller dot for each invidual
+on each line plus a larger one for the group mean.
+We need to decide whether to use matplotlib for the plots or some JavaScript solution.
+(We will later add more explanatory elements to this plot, because we need to attach
+handbook sections to certain constellations of results.)
