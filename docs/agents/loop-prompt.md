@@ -1,0 +1,23 @@
+
+List issues.
+Pick the **lowest-numbered issue labeled 'good first issue'** and solve it.
+If there is no such issue, output "<promise>COMPLETE!</promise>" (precisely!) and stop.
+
+If the issue involves adding **new functionality**, proceed using /tdd and output the name
+of each new test as it turns green.
+If the issue only **modifies existing functionality slightly**, prefer adapting existing tests over adding new ones,
+but still follow a test-first approach.
+If it is still simpler, use whatever approach appears best.
+
+Run the full test suite at the end, but prefer smaller runs before if the risk of breaking something appears low.
+
+When done, commit your work results (but do not push), then change the issue label to 'ready-for-human'.
+Add a comment to the issue that summarizes your work as a short itemized list of the files changed (and how).
+For tests, list the name of each new test. Print the summary.
+
+Split complex changes into several **commits**, keep simple changes in a single commit, even if it consists
+of multiple (smaller) file changes.
+Commit msg format: "mainfilename: #issue; short content description".
+Issue number can be missing. Rarely two or three main files. 
+Expand content description to several lines only in rare critical cases.
+
