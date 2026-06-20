@@ -111,3 +111,12 @@ TeamCultureProfile
 
 ## Next step
 
+Consider docs/agents/loop-prompt.md and imagine you should be following these instructions
+(currently you should not; we're only talking _about_ them), in particular involving the tdd skill.
+For the totality of what you have read (inclucing AGENTS.md etc.), 
+point out instructions CONFL that you find conflicting or at severe tension.
+Point out information CONFU that you find confusing in other ways.
+Point out information REDUND that is redundant or superfluous.
+Point out instructions or information VAGUE that is overly vague.
+Don't get over-eager: Each category may well be empty. Point out only what you expect
+to create actual execution problems.
