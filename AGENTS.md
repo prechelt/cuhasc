@@ -17,7 +17,7 @@ Project-specific conventions:
 - Tests focussing on the interplay of several interface functions get an appropriate ad-hoc name.
 
 Behavior conventions:
-- If any substantial design aspect is ambiguous, discuss it with me.
+- If the session is interactive and any substantial design aspect is ambiguous, discuss it with me.
 
 ## Agent skills
 

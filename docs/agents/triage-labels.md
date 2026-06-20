@@ -2,6 +2,7 @@
 
 The skills speak in terms of five canonical triage roles. 
 Here is the list, also including further states introduced beyond the skills.
+These states are mutually exclusive -- add and delete labels accordingly.
 
 | Label in our tracker | Meaning                                  |
 |----------------------|------------------------------------------|

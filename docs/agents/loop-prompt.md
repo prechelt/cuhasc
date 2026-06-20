@@ -16,7 +16,7 @@ Run the full test suite at the end, but prefer smaller runs before if the risk o
 
 When done, commit your work results (but do not push), then change the issue label to 'ready-for-review'.
 Add a comment to the issue that summarizes your work as a short itemized list of the files changed (and how).
-For tests, list the name of each new test. Print the summary.
+Print the summary.
 
 Split complex changes into several **commits**, keep simple changes in a single commit, even if it consists
 of multiple (smaller) file changes.
