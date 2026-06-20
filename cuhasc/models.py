@@ -31,6 +31,14 @@ class Member(models.Model):
             self.token = base.random_token(c.TOKEN_LENGTH_MEMBER)
         super().save(*args, **kwargs)
 
+    def culture_profile(self) -> dict[str, float]:
+        from collections import defaultdict
+        sums: dict[str, list[int]] = defaultdict(list)
+        for qr in self.qresults.all():
+            dim = qr.item.rstrip('0123456789')
+            sums[dim].append(qr.value)
+        return {dim: sum(vals) / len(vals) for dim, vals in sums.items() if vals}
+
 
 class QResult(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='qresults')
@@ -40,5 +48,3 @@ class QResult(models.Model):
 
     class Meta:
         unique_together = [('member', 'item')]
-
-

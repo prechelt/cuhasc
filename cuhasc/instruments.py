@@ -7,6 +7,7 @@ INSTRUMENTS_DIR = Path(__file__).resolve().parent.parent / 'instruments'
 
 _scales: dict = {}        # language code -> {scale_name: [labels]}
 _questionnaires: dict = {}  # language code -> [Item]
+_dimensions: dict = {}    # language code -> {code: name}
 
 
 @dataclass
@@ -57,6 +58,22 @@ def load_questionnaires(glob: str):
         _questionnaires[lang] = items
 
 
+def load_dimensions(glob: str):
+    global _dimensions
+    _dimensions = {}
+    for path in sorted(glob_module.glob(glob)):
+        stem = Path(path).stem
+        lang = stem.split('-', 1)[1] if '-' in stem else stem
+        dims = {}
+        with open(path) as f:
+            reader = csv.reader(f, delimiter=';')
+            next(reader)  # skip header
+            for row in reader:
+                if len(row) >= 2 and row[0].strip():
+                    dims[row[0].strip()] = row[1].strip()
+        _dimensions[lang] = dims
+
+
 def get_languages() -> list[str]:
     return sorted(set(_scales.keys()) & set(_questionnaires.keys()))
 
@@ -69,5 +86,10 @@ def get_scales(language: str) -> dict:
     return _scales[language]
 
 
+def get_dimension_name(code: str, language: str) -> str:
+    return _dimensions[language][code]
+
+
 load_scales(str(INSTRUMENTS_DIR / 'scales-*.csv'))
 load_questionnaires(str(INSTRUMENTS_DIR / 'cvscale-*.tsv'))
+load_dimensions(str(INSTRUMENTS_DIR / 'dimensions-*.csv'))
