@@ -1,7 +1,7 @@
 # cuhasc
 handbook/
 instruments/YooDonLen11-CVscale-Hofstede-dimensions-for-individuals.pdf
-
+.last*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

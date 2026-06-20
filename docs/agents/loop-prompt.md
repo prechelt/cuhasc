@@ -1,10 +1,12 @@
 
 List issues.
-Pick the **highest-numbered issue labeled 'ready-for-agent'** and solve it.
+Pick the **lowest-numbered issue labeled 'ready-for-agent'** and solve it.
 If there is no such issue, output "<promise>COMPLETE!</promise>" (precisely!) and stop.
 
 If the "blocked by" section mentions issues in the same state, solve those first:
 Switch to an issue that does not have such entries.
+
+Print number and title of the issue you picked.
 
 When adding/changing code, proceed using /tdd and output the name of each test each time it turns from red to green.
 If the issue only **modifies existing functionality slightly**, prefer adapting existing tests over adding new ones,
