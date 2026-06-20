@@ -1,10 +1,20 @@
 
 This is a Django project following all the usual Django conventions.
+Testing uses pytest.
 Find a project overview in README.md.
 
 Project-specific conventions:
-- Declare parameter and result types for functions
-- ...
+- Declare parameter and result types for functions, except duck-typed params or `None` results. 
+- Tests for module `abc.defg` go into module `abc.test.test_defg`.
+- Use special pytest mechanisms (e.g. parametrize) where truly useful.
+- Adding a test means adding an assertion, not necessarily a new test function:
+  When tests can share the same scenario, prefer collecting all assertions (and possibly additional
+  scenario steps in between) in one function for the happy path cases and another for
+  the test cases.
+- Tests focussing on interface function `myfunction()` are called `test_myfunction_has_expected_behavior`
+  for complex cases. Several simple cases should go together in `test_myfunction_ok` (happy path) or
+  `test_myfunction_error` (error cases).
+- Tests focussing on the interplay of several interface functions get an appropriate ad-hoc name.
 
 Behavior conventions:
 - If any substantial design aspect is ambiguous, discuss it with me.
@@ -17,7 +27,7 @@ Issues and PRDs are tracked as GitHub issues (via the `gh` CLI). See `docs/agent
 
 ### Triage labels
 
-Five canonical triage roles, using the default label names. See `docs/agents/triage-labels.md`.
+Five canonical triage roles, using default label names. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
