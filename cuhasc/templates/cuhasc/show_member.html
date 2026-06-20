@@ -6,4 +6,11 @@
 <h1>{{ member.name }}</h1>
 <p>Team: {{ member.team.name }}</p>
 <a href="{% url 'edit_member' member.id member.token %}">Edit your profile</a>
+
+{% if culture_profile_svg %}
+<div class="mt-4">
+    <h2>Culture Profile</h2>
+    {{ culture_profile_svg }}
+</div>
+{% endif %}
 {% endblock %}

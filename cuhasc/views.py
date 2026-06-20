@@ -1,11 +1,63 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseNotAllowed
+from django.utils.safestring import mark_safe
 
 from cuhasc.cookies import CuhascCookie
 from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
 import cuhasc.instruments as instruments
 from cuhasc.models import Member, Team
 import cuhasc.constants as c
+
+DIMENSION_ORDER = ['PO', 'UN', 'CO', 'LT', 'MA']
+
+_SVG_WIDTH = 500
+_SVG_LEFT = 160   # space for dimension labels
+_SVG_RIGHT = 20
+_SVG_PLOT_W = _SVG_WIDTH - _SVG_LEFT - _SVG_RIGHT
+_SVG_TOP = 20
+_SVG_ROW_H = 50
+_SVG_HEIGHT = _SVG_TOP + len(DIMENSION_ORDER) * _SVG_ROW_H + 20
+
+
+def _score_to_x(score: float) -> float:
+    return _SVG_LEFT + (score - 1) / 4 * _SVG_PLOT_W
+
+
+def _culture_profile_svg(profile: dict[str, float], language: str) -> str:
+    lines = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{_SVG_WIDTH}" height="{_SVG_HEIGHT}">',
+    ]
+    # axis tick marks and labels at 1..5
+    for score in range(1, 6):
+        x = _score_to_x(score)
+        lines.append(
+            f'<line x1="{x}" y1="{_SVG_TOP - 5}" x2="{x}" y2="{_SVG_TOP + len(DIMENSION_ORDER) * _SVG_ROW_H}"'
+            f' stroke="#ccc" stroke-width="1"/>'
+        )
+        lines.append(
+            f'<text x="{x}" y="{_SVG_TOP - 8}" text-anchor="middle" font-size="11" fill="#888">{score}</text>'
+        )
+    # one row per dimension
+    for i, code in enumerate(DIMENSION_ORDER):
+        y = _SVG_TOP + i * _SVG_ROW_H + _SVG_ROW_H // 2
+        label = instruments.get_dimension_name(code, language)
+        # horizontal line
+        lines.append(
+            f'<line x1="{_SVG_LEFT}" y1="{y}" x2="{_SVG_WIDTH - _SVG_RIGHT}" y2="{y}"'
+            f' stroke="#aaa" stroke-width="1"/>'
+        )
+        # label to the left
+        lines.append(
+            f'<text x="{_SVG_LEFT - 8}" y="{y + 4}" text-anchor="end" font-size="12" fill="#333">{label}</text>'
+        )
+        # dot if score defined
+        if code in profile:
+            x = _score_to_x(profile[code])
+            lines.append(
+                f'<circle cx="{x:.1f}" cy="{y}" r="8" fill="#0d6efd"/>'
+            )
+    lines.append('</svg>')
+    return '\n'.join(lines)
 
 
 def home(request):
@@ -82,7 +134,14 @@ def create_member(request, team_id, member_token):
 
 def show_member(request, id, token):
     member = get_object_or_404(Member, id=id, token=token)
-    return render(request, "cuhasc/show_member.html", {'member': member})
+    cookie = CuhascCookie(request)
+    language = cookie.get_language() or 'en'
+    profile = member.culture_profile()
+    svg = mark_safe(_culture_profile_svg(profile, language)) if profile else None
+    return render(request, "cuhasc/show_member.html", {
+        'member': member,
+        'culture_profile_svg': svg,
+    })
 
 
 def edit_member(request, id, token):
