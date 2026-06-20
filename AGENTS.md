@@ -21,14 +21,9 @@ Behavior conventions:
 
 ## Agent skills
 
-### Issue tracker
-
-Issues and PRDs are tracked as GitHub issues (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Five canonical triage roles, using default label names. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+- Issues and PRDs are tracked as GitHub issues (via the `gh` CLI). 
+  See `docs/agents/issue-tracker.md`.
+- We use canonical issue labels for issue states (triage roles).
+  See `docs/agents/triage-labels.md`.
+- We use a single design space, not several: one `CONTEXT.md` + `docs/adr/` at the repo root.
+  See `docs/agents/domain.md`.
