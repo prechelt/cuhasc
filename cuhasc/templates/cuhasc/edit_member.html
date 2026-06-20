@@ -7,6 +7,25 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+
+{% if languages %}
+<div class="mb-3">
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Language
+        </button>
+        <ul class="dropdown-menu">
+            {% for lang in languages %}
+            <li>
+                <button class="dropdown-item" type="submit" name="_switch_language" value="{{ lang.code }}">
+                    <span style="display:inline-block;width:140px;">{{ lang.english_name }}</span><span dir="{{ lang.dir }}">{{ lang.autonym }}</span>
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
     <h2 class="mt-4">Questionnaire</h2>
     {% for item_field in qform %}
     <div class="mb-3">

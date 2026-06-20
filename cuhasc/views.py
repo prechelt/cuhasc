@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from cuhasc.i18n import language_map
 from django.http import HttpResponseNotAllowed
 from django.utils.safestring import mark_safe
 
@@ -60,6 +61,22 @@ def _culture_profile_svg(profile: dict[str, float], language: str) -> str:
     return '\n'.join(lines)
 
 
+
+def _get_language_items() -> list[dict]:
+    """Return list of {code, english_name, autonym, dir} for available languages."""
+    result = []
+    for code in instruments.get_languages():
+        if code in language_map:
+            info = language_map[code]
+            result.append({
+                'code': code,
+                'english_name': info[0],
+                'autonym': info[1],
+                'dir': info[2].lower(),
+            })
+    return result
+
+
 def home(request):
     cookie = CuhascCookie(request)
     return render(request, "cuhasc/home.html", {
@@ -108,26 +125,43 @@ def edit_team(request, id, token):
 
 def create_member(request, team_id, member_token):
     team = get_object_or_404(Team, id=team_id, member_token=member_token)
+    cookie = CuhascCookie(request)
+    language = cookie.get_language() or 'en'
+    languages = _get_language_items()
     if request.method == 'GET':
         form = MemberForm()
-        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'))
+        qform = QuestionnaireForm(instruments.get_questionnaire(language), instruments.get_scales(language))
         return render(request, "cuhasc/create_member.html",
-                      {'form': form, 'qform': qform, 'team': team})
+                      {'form': form, 'qform': qform, 'team': team,
+                       'languages': languages, 'current_language': language})
     elif request.method == 'POST':
+        if '_switch_language' in request.POST:
+            new_lang = request.POST['_switch_language']
+            cookie.set_language(new_lang)
+            q_initial = {k: v for k, v in request.POST.items()
+                         if k not in ('csrfmiddlewaretoken', '_switch_language', 'name')}
+            form = MemberForm(initial={'name': request.POST.get('name', '')})
+            qform = QuestionnaireForm(instruments.get_questionnaire(new_lang), instruments.get_scales(new_lang),
+                                      initial=q_initial)
+            response = render(request, "cuhasc/create_member.html",
+                              {'form': form, 'qform': qform, 'team': team,
+                               'languages': languages, 'current_language': new_lang})
+            response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
+            return response
         form = MemberForm(request.POST)
-        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'), request.POST)
+        qform = QuestionnaireForm(instruments.get_questionnaire(language), instruments.get_scales(language), request.POST)
         if form.is_valid() and qform.is_valid():
             member = form.save(commit=False)
             member.team = team
             member.save()
             qform.save_results(member)
-            cookie = CuhascCookie(request)
             cookie.add(member)
             response = redirect('show_member', id=member.id, token=member.token)
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
         return render(request, "cuhasc/create_member.html",
-                      {'form': form, 'qform': qform, 'team': team})
+                      {'form': form, 'qform': qform, 'team': team,
+                       'languages': languages, 'current_language': language})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
@@ -146,20 +180,39 @@ def show_member(request, id, token):
 
 def edit_member(request, id, token):
     member = get_object_or_404(Member, id=id, token=token)
+    cookie = CuhascCookie(request)
+    language = cookie.get_language() or 'en'
+    languages = _get_language_items()
     if request.method == 'GET':
         form = MemberForm(instance=member)
         existing = {qr.item: str(qr.value) for qr in member.qresults.all()}
-        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'), initial=existing)
+        qform = QuestionnaireForm(instruments.get_questionnaire(language), instruments.get_scales(language),
+                                  initial=existing)
         return render(request, "cuhasc/edit_member.html",
-                      {'form': form, 'qform': qform, 'member': member})
+                      {'form': form, 'qform': qform, 'member': member,
+                       'languages': languages, 'current_language': language})
     elif request.method == 'POST':
+        if '_switch_language' in request.POST:
+            new_lang = request.POST['_switch_language']
+            cookie.set_language(new_lang)
+            q_initial = {k: v for k, v in request.POST.items()
+                         if k not in ('csrfmiddlewaretoken', '_switch_language', 'name')}
+            form = MemberForm(instance=member, initial={'name': request.POST.get('name', member.name)})
+            qform = QuestionnaireForm(instruments.get_questionnaire(new_lang), instruments.get_scales(new_lang),
+                                      initial=q_initial)
+            response = render(request, "cuhasc/edit_member.html",
+                              {'form': form, 'qform': qform, 'member': member,
+                               'languages': languages, 'current_language': new_lang})
+            response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
+            return response
         form = MemberForm(request.POST, instance=member)
-        qform = QuestionnaireForm(instruments.get_questionnaire('en'), instruments.get_scales('en'), request.POST)
+        qform = QuestionnaireForm(instruments.get_questionnaire(language), instruments.get_scales(language), request.POST)
         if form.is_valid() and qform.is_valid():
             form.save()
             qform.save_results(member)
             return redirect('show_member', id=member.id, token=member.token)
         return render(request, "cuhasc/edit_member.html",
-                      {'form': form, 'qform': qform, 'member': member})
+                      {'form': form, 'qform': qform, 'member': member,
+                       'languages': languages, 'current_language': language})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
