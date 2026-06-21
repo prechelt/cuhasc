@@ -75,7 +75,7 @@ def load_dimensions(glob: str):
 
 
 def get_languages() -> list[str]:
-    return sorted(set(_scales.keys()) & set(_questionnaires.keys()) & set(_dimensions.keys()))
+    return sorted(set(_scales.keys()) & set(_questionnaires.keys()))
 
 
 def get_questionnaire(language: str) -> list[Item]:
