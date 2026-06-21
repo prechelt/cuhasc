@@ -20,22 +20,6 @@ class Team(models.Model):
             self.member_token = base.random_token(c.TOKEN_LENGTH_MEMBER)
         super().save(*args, **kwargs)
 
-    def culture_profile(self) -> dict:
-        """Team Culture Profile: each Member's Culture Profile plus the per-Dimension
-        team mean Score. A Member with zero answers has no Culture Profile and is
-        omitted from both the member list and the aggregate."""
-        members: list[dict] = []
-        for member in self.members.all():
-            profile = member.culture_profile()
-            if profile:
-                members.append({'name': member.name, 'profile': profile})
-        means: dict[str, float] = {}
-        dimensions = {dim for m in members for dim in m['profile']}
-        for dim in dimensions:
-            scores = [m['profile'][dim] for m in members if dim in m['profile']]
-            means[dim] = sum(scores) / len(scores)
-        return {'members': members, 'means': means}
-
 
 class Member(models.Model):
     name = models.CharField(max_length=100)

@@ -6,24 +6,4 @@
 <h1>Team "{{ team.name }}"</h1>
 <p>Share this link with your team members:</p>
 <a href="{% url 'create_member' team.id team.member_token %}">{% url 'create_member' team.id team.member_token %}</a>
-
-{% if team_culture_profile_svg %}
-<div class="mt-4">
-    <h2>Team Culture Profile</h2>
-    <label>
-        <input type="checkbox" id="toggle-member-labels"> Show member names
-    </label>
-    <div id="team-plot">
-        {{ team_culture_profile_svg }}
-    </div>
-</div>
-<script>
-    document.getElementById('toggle-member-labels').addEventListener('change', function () {
-        const vis = this.checked ? 'visible' : 'hidden';
-        document.querySelectorAll('#team-plot .member-label').forEach(function (el) {
-            el.setAttribute('visibility', vis);
-        });
-    });
-</script>
-{% endif %}
 {% endblock %}
