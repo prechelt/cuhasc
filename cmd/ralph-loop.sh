@@ -12,10 +12,10 @@ ratelimit_buffer=60 # extra seconds to wait past a rate-limit reset time
 # use_sandbox=1 -> run the agent inside the `sbx` sandbox (default).
 # use_sandbox=0 -> call `claude` directly in this working copy (no PTY, no
 # sandbox lifecycle); more reliable but unsandboxed. Override via the env var.
-use_sandbox=${use_sandbox:0}  # use default value or perhaps injected value
+use_sandbox=${use_sandbox:-0}  # env var of same name if set, else 0
 agent_options="--permission-mode bypassPermissions --verbose --output-format stream-json -p"
-last_sbx_output=".last_sbx_output.txt"  # file for debugging
-last_assistant_text=".last_assistant_test.txt"  # file for debugging
+last_agent_output=".last_agent_output.txt"  # file for debugging
+last_assistant_text=".last_assistant_text.txt"  # file for debugging
 
 # ----- prompt:
 prompt=$(cat docs/agents/loop-prompt.md)
@@ -27,7 +27,7 @@ finish_msg="<promise>COMPLETE!</promise>"  # must match prompt text
 # before any jq. Works for both the `sbx run` JSONL stream (one object per line)
 # and the single multi-line `sbx ls --json` document, since it removes only the
 # escape sequences and leaves the JSON intact.
-strip_junk() { sed -E 's/\x1b\][^\x07\x1b]*(\x07|\x1b\\)//g'; }
+strip_junk() { sed -u -E 's/\x1b\][^\x07\x1b]*(\x07|\x1b\\)//g'; }
 
 # The sandbox is a container owned by the Docker Desktop daemon (Windows side);
 # its lifecycle is independent of this pipeline. Killing the local `sbx run`
@@ -91,22 +91,27 @@ do_it_once() {
     # still be running in the persistent sandbox and would commit behind our back.
     stop_sandbox
   fi
-  # Raw stream -> $last_sbx_output (authoritative log, inspected afterwards).
+  # Raw stream -> $last_agent_output (authoritative log, inspected afterwards).
   # Extracted assistant text -> terminal (live) and $last_assistant_text
   # (so the finish-promise check reads a file rather than capturing stdout, which
   # keeps the live display and avoids set -e/pipefail surprises in $()).
   run_agent | \
-  tee "$last_sbx_output" | \
+  tee "$last_agent_output" | \
   strip_junk | \
-  jq -Rrj 'fromjson? |
+  jq --unbuffered -Rrj 'fromjson? |
            if .type=="assistant" then (.message.content[]? |
              if .type=="thinking" then (.thinking[0:100] + "\n")
-             elif .type=="text" then .text else empty end)
-           elif .type=="result" then (.result // empty)
+             elif .type=="text" then ((.text | rtrimstr("\n")) + "\n")
+             else empty end)
+           elif .type=="result" then (if .is_error then ((.result // "") + "\n") else empty end)
            else empty end' | \
   # ^ -R + fromjson? parses each line tolerantly: a malformed/partial line is
   # skipped instead of aborting jq. Crucial -- an aborting jq sends SIGPIPE up
   # the pipe and kills `sbx run` mid-stream (the original "stream breaks off" bug).
+  # --unbuffered + sed -u (in strip_junk) flush each event live instead of
+  # block-buffering the pipe. Each assistant message ends in "\n" so messages land
+  # on their own lines; `result` is shown only on error (on success it just repeats
+  # the final assistant message).
   tee "$last_assistant_text"
 }
 
@@ -114,7 +119,7 @@ do_it_once() {
 # stream-json result event with is_error=false. Inspect the captured raw stream.
 turn_succeeded() {
   local r
-  r=$(strip_junk < "$last_sbx_output" | \
+  r=$(strip_junk < "$last_agent_output" | \
       jq -Rr 'fromjson? | select(.type=="result") | (.is_error | not)' \
       2>/dev/null | tail -n1) || true
   [ "$r" = "true" ]
@@ -123,7 +128,7 @@ turn_succeeded() {
 # Item 3: if the stream carries a *blocking* rate-limit event (status != allowed),
 # echo its reset time (epoch seconds); empty otherwise.
 ratelimit_reset() {
-  strip_junk < "$last_sbx_output" | \
+  strip_junk < "$last_agent_output" | \
     jq -Rr 'fromjson? | select(.type=="rate_limit_event")
             | .rate_limit_info | select(.status != "allowed") | .resetsAt' \
     2>/dev/null | tail -n1 || true
@@ -166,7 +171,7 @@ if [ -z "$iterations" ]; then
 fi
 
 for ((iteration=1; iteration<=$iterations; iteration++)); do
-  echo "==================== ralph loop round $iteration ===================="
+  printf '\n==================== ralph loop round %s ====================\n' "$iteration"
   if ! run_round; then
     echo "***** round $iteration failed after $((max_retries+1)) attempts; giving up. *****" >&2
     stop_sandbox
