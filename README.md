@@ -124,5 +124,3 @@ Point out information REDUND that is redundant or superfluous.
 Point out instructions or information VAGUE that is overly vague.
 Don't get over-eager: Each category may well be empty. Point out only what you expect
 to create actual execution problems.
-
-This is a really good ending.
