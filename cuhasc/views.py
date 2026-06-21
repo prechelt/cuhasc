@@ -24,10 +24,9 @@ def _score_to_x(score: float) -> float:
     return _SVG_LEFT + (score - 1) / 4 * _SVG_PLOT_W
 
 
-def _culture_profile_svg(profile: dict[str, float], language: str) -> str:
-    lines = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{_SVG_WIDTH}" height="{_SVG_HEIGHT}">',
-    ]
+def _svg_grid(lines: list[str], language: str) -> dict[str, float]:
+    """Append the shared axis, Dimension lines and labels to ``lines``.
+    Returns the y coordinate of each Dimension row, keyed by code."""
     # axis tick marks and labels at 1..5
     for score in range(1, 6):
         x = _score_to_x(score)
@@ -39,8 +38,10 @@ def _culture_profile_svg(profile: dict[str, float], language: str) -> str:
             f'<text x="{x}" y="{_SVG_TOP - 8}" text-anchor="middle" font-size="11" fill="#888">{score}</text>'
         )
     # one row per dimension
+    rows: dict[str, float] = {}
     for i, code in enumerate(DIMENSION_ORDER):
         y = _SVG_TOP + i * _SVG_ROW_H + _SVG_ROW_H // 2
+        rows[code] = y
         label = instruments.get_dimension_name(code, language)
         # horizontal line
         lines.append(
@@ -51,12 +52,49 @@ def _culture_profile_svg(profile: dict[str, float], language: str) -> str:
         lines.append(
             f'<text x="{_SVG_LEFT - 8}" y="{y + 4}" text-anchor="end" font-size="12" fill="#333">{label}</text>'
         )
+    return rows
+
+
+def _culture_profile_svg(profile: dict[str, float], language: str) -> str:
+    lines = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{_SVG_WIDTH}" height="{_SVG_HEIGHT}">',
+    ]
+    rows = _svg_grid(lines, language)
+    for code, y in rows.items():
         # dot if score defined
         if code in profile:
             x = _score_to_x(profile[code])
             lines.append(
                 f'<circle cx="{x:.1f}" cy="{y}" r="8" fill="#0d6efd"/>'
             )
+    lines.append('</svg>')
+    return '\n'.join(lines)
+
+
+def _team_culture_profile_svg(team_profile: dict, language: str) -> str:
+    lines = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{_SVG_WIDTH}" height="{_SVG_HEIGHT}">',
+    ]
+    rows = _svg_grid(lines, language)
+    # a small dot per member on each Dimension line, plus a (hidden) member label
+    for member in team_profile['members']:
+        for code, score in member['profile'].items():
+            y = rows[code]
+            x = _score_to_x(score)
+            lines.append(
+                f'<circle class="member-dot" cx="{x:.1f}" cy="{y}" r="4" fill="#6c757d"/>'
+            )
+            lines.append(
+                f'<text class="member-label" x="{x:.1f}" y="{y - 8}" text-anchor="middle"'
+                f' font-size="10" fill="#333" visibility="hidden">{member["name"]}</text>'
+            )
+    # a larger dot for the per-Dimension team mean
+    for code, score in team_profile['means'].items():
+        y = rows[code]
+        x = _score_to_x(score)
+        lines.append(
+            f'<circle class="mean-dot" cx="{x:.1f}" cy="{y}" r="8" fill="#0d6efd"/>'
+        )
     lines.append('</svg>')
     return '\n'.join(lines)
 
@@ -105,7 +143,15 @@ def create_team(request):
 
 def show_team(request, id, token):
     team = get_object_or_404(Team, id=id, token=token)
-    return render(request, "cuhasc/show_team.html", {'team': team})
+    cookie = CuhascCookie(request)
+    language = cookie.get_language() or 'en'
+    team_profile = team.culture_profile()
+    svg = (mark_safe(_team_culture_profile_svg(team_profile, language))
+           if team_profile['members'] else None)
+    return render(request, "cuhasc/show_team.html", {
+        'team': team,
+        'team_culture_profile_svg': svg,
+    })
 
 
 def edit_team(request, id, token):
