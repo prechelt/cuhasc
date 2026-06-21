@@ -99,9 +99,13 @@ TeamCultureProfile
 
 ## Next development steps
 
-- Implement #2, review it
-- Implement #3, review it
-- Implement #4, review it
+- show ralph-loop.sh
+- show loop-prompt.md
+- Implement #2, try it out, review it, record required changes
+- Implement #3 ditto
+- Implement #4 ditto
+- perform changes and close issues
+- close parent issue #1
 - load_scales() should check consistency of 'levels' with actual number of levels.
 - show_team must display an absolute URL with host/port
 - Evaluate HTTP header for default language
