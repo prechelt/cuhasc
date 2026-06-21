@@ -38,6 +38,7 @@ sandbox_status() {
 }
 
 stop_sandbox() {
+  [ "$use_sandbox" = "1" ] || return 0   # nothing to stop without a sandbox
   local status
   status=$(sandbox_status)
   if [ -n "$status" ] && [ "$status" != "stopped" ]; then
@@ -71,8 +72,12 @@ wait_until_stopped() {
 
 on_interrupt() {
   echo "" >&2
-  echo "***** interrupted; stopping sandbox before exit *****" >&2
-  stop_sandbox
+  if [ "$use_sandbox" = "1" ]; then
+    echo "***** interrupted; stopping sandbox before exit *****" >&2
+    stop_sandbox
+  else
+    echo "***** interrupted *****" >&2
+  fi
   exit 130
 }
 trap on_interrupt INT TERM
@@ -100,7 +105,7 @@ do_it_once() {
   strip_junk | \
   jq --unbuffered -Rrj 'fromjson? |
            if .type=="assistant" then (.message.content[]? |
-             if .type=="thinking" then (.thinking[0:100] + "\n")
+             if .type=="thinking" and .thinking != "" then (.thinking[0:100] + "\n")
              elif .type=="text" then ((.text | rtrimstr("\n")) + "\n")
              else empty end)
            elif .type=="result" then (if .is_error then ((.result // "") + "\n") else empty end)
