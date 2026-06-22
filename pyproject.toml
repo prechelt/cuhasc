@@ -22,7 +22,12 @@ crispy-bootstrap5 = ">=2024.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0"
+pytest-cov = "^7.1"
+pytest-django = "^4.12"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
