@@ -29,6 +29,22 @@ NLP benchmark coverage, and web presence. The high/mid/low boundaries are fuzzy;
 a researcher might reasonably argue about 20–30 entries in the mid/low borderland (e.g., sw, ne, my, be, eo). 
 The high-resource group (27 languages) is the most defensible tier.
 """
+def language_options(codes) -> list[dict]:
+    """Display rows for the questionnaire language selector, one per code, in the given order.
+    Each row carries the English name, the autonym, and a ``dir`` ('ltr'/'rtl') derived from
+    the RTL/LTR flag in ``language_map``. Unknown codes fall back to the bare code, LTR."""
+    options = []
+    for code in codes:
+        entry = language_map.get(code)
+        if entry is None:
+            english, autonym, direction = code, code, 'ltr'
+        else:
+            english, autonym = entry[0], entry[1]
+            direction = 'rtl' if entry[2] == 'RTL' else 'ltr'
+        options.append({'code': code, 'english': english, 'autonym': autonym, 'dir': direction})
+    return options
+
+
 language_map = {
   "aa": [
     "Afar",
