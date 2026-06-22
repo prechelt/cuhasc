@@ -7,6 +7,7 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+    {% include "cuhasc/_language_selector.html" %}
     <h2 class="mt-4">Questionnaire</h2>
     {% for item_field in qform %}
     <div class="mb-3">

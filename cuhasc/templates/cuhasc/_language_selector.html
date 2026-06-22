@@ -1,0 +1,23 @@
+{# Questionnaire language selector: a Bootstrap dropdown (ADR-0002). Each item is a
+   submit button posting switch_language=<code>, so changing language POSTs the form
+   with the in-progress answers and re-renders in the chosen language. Rows are two
+   columns -- English name | autonym -- with the autonym column aligned at a common
+   left edge, and carry dir from the language's RTL/LTR flag. #}
+<div class="dropdown mb-3">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+        {{ current_language.english }} ({{ current_language.autonym }})
+    </button>
+    <ul class="dropdown-menu">
+        {% for lang in languages %}
+        <li>
+            <button type="submit" name="switch_language" value="{{ lang.code }}"
+                    class="dropdown-item d-grid gap-3" style="grid-template-columns: 9rem auto;"
+                    dir="{{ lang.dir }}">
+                <span class="text-start">{{ lang.english }}</span>
+                <span class="text-start">{{ lang.autonym }}</span>
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

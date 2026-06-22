@@ -1,6 +1,10 @@
+import json
+
 import pytest
 from django.urls import reverse
 
+import cuhasc.constants as c
+import cuhasc.instruments as instruments
 from cuhasc.models import Member, QResult, Team
 
 
@@ -8,6 +12,16 @@ from cuhasc.models import Member, QResult, Team
 def member(db):
     team = Team.objects.create(name='TestTeam', token='TEAMTOKEN1')
     return Member.objects.create(name='Alice', token='MEMBERTKN1', team=team)
+
+
+@pytest.fixture
+def team(db):
+    return Team.objects.create(name='TestTeam', token='TEAMTOKEN1', member_token='MBRTOKEN01')
+
+
+def _full_answers(language='en'):
+    """A complete, valid set of answers (every item -> '3') for the questionnaire."""
+    return {item.item: '3' for item in instruments.get_questionnaire(language)}
 
 
 def test_show_member_requires_correct_token(client, member):
@@ -77,3 +91,70 @@ def test_show_team_member_labels_hidden_by_default(client, team_with_answers):
     assert 'class="member-label"' in content
     assert 'visibility="hidden"' in content
     assert 'type="checkbox"' in content
+
+
+# ---- questionnaire language selector + switch-vs-submit (issue #4) ----
+
+def _cookie_language(client):
+    morsel = client.cookies.get(c.COOKIE_NAME)
+    return json.loads(morsel.value).get('language') if morsel else None
+
+
+def test_create_member_shows_language_dropdown(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    content = client.get(url).content.decode()
+    assert 'dropdown-menu' in content                       # Bootstrap dropdown, not <select>
+    assert 'name="switch_language"' in content
+    assert 'Deutsch' in content and 'German' in content     # English name | autonym row
+
+
+def test_edit_member_shows_language_dropdown(client, member):
+    url = reverse('edit_member', args=[member.id, member.token])
+    content = client.get(url).content.decode()
+    assert 'dropdown-menu' in content
+    assert 'name="switch_language"' in content
+
+
+def test_create_member_language_switch_preserves_answers_without_errors(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    data = {'name': 'Alice', 'PO1': '4', 'switch_language': 'de'}
+    resp = client.post(url, data)
+    assert resp.status_code == 200                           # re-render, no redirect
+    content = resp.content.decode()
+    assert 'stimme überhaupt nicht zu' in content            # German scale labels -> switched
+    assert 'value="4"\n' not in content or 'checked' in content
+    assert 'checked' in content                              # the entered PO1=4 stays selected
+    assert 'errorlist' not in content                        # a switch surfaces no errors
+    assert Member.objects.count() == 0                       # nothing saved on a switch
+
+
+def test_create_member_language_switch_sets_cookie(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    client.post(url, {'name': '', 'switch_language': 'de'})
+    assert _cookie_language(client) == 'de'
+
+
+def test_create_member_real_submit_saves_qresults(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    data = {'name': 'Alice', **_full_answers('en')}
+    resp = client.post(url, data)
+    assert resp.status_code == 302                           # redirect on successful save
+    member = Member.objects.get(name='Alice')
+    assert member.qresults.count() == len(_full_answers('en'))
+
+
+def test_edit_member_language_switch_preserves_answers_without_errors(client, member):
+    url = reverse('edit_member', args=[member.id, member.token])
+    resp = client.post(url, {'name': 'Alice', 'PO1': '2', 'switch_language': 'de'})
+    assert resp.status_code == 200
+    content = resp.content.decode()
+    assert 'stimme überhaupt nicht zu' in content
+    assert 'errorlist' not in content
+    assert member.qresults.count() == 0                      # not saved on a switch
+
+
+def test_create_member_initial_render_uses_cookie_language(client, team):
+    client.cookies[c.COOKIE_NAME] = json.dumps({'roles': [], 'language': 'de'})
+    url = reverse('create_member', args=[team.id, team.member_token])
+    content = client.get(url).content.decode()
+    assert 'stimme überhaupt nicht zu' in content            # German because cookie says 'de'
