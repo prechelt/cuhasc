@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db import models
 
 import cuhasc.base as base
@@ -30,6 +32,13 @@ class Member(models.Model):
         if not self.token:
             self.token = base.random_token(c.TOKEN_LENGTH_MEMBER)
         super().save(*args, **kwargs)
+
+    def culture_profile(self) -> dict[str, float]:
+        answers: dict[str, list[int]] = defaultdict(list)
+        for qr in self.qresults.all():
+            dimension = qr.item.rstrip('0123456789')
+            answers[dimension].append(qr.value)
+        return {dim: sum(vals) / len(vals) for dim, vals in answers.items()}
 
 
 class QResult(models.Model):
