@@ -9,6 +9,15 @@ def member(db):
     return Member.objects.create(name='Alice', token='MEMBERTKN1', team=team)
 
 
+@pytest.fixture
+def team(db):
+    return Team.objects.create(name='TestTeam', token='TEAMTOKEN1')
+
+
+def _answer(member, item, value):
+    QResult.objects.create(member=member, item=item, scale='disagree5', value=value)
+
+
 def test_culture_profile_ok(member):
     # no answers: every Dimension undefined -> empty profile
     assert member.culture_profile() == {}
@@ -28,3 +37,27 @@ def test_culture_profile_excludes_dimension_with_no_answers(member):
     assert 'PO' in profile
     for code in ['UN', 'CO', 'LT', 'MA']:
         assert code not in profile
+
+
+def test_team_culture_profile_per_member_and_mean(team):
+    alice = Member.objects.create(name='Alice', token='ALICETKN01', team=team)
+    bob = Member.objects.create(name='Bob', token='BOBTOKEN01', team=team)
+    _answer(alice, 'PO1', 4)
+    _answer(alice, 'UN1', 5)
+    _answer(bob, 'PO1', 2)
+    result = team.culture_profile()
+    profiles = {m['name']: m['profile'] for m in result['members']}
+    assert profiles['Alice']['PO'] == pytest.approx(4.0)
+    assert profiles['Bob']['PO'] == pytest.approx(2.0)
+    assert result['means']['PO'] == pytest.approx(3.0)   # (4 + 2) / 2
+    assert result['means']['UN'] == pytest.approx(5.0)   # only Alice answered UN
+
+
+def test_team_culture_profile_omits_zero_answer_members(team):
+    alice = Member.objects.create(name='Alice', token='ALICETKN02', team=team)
+    Member.objects.create(name='Empty', token='EMPTYTKN01', team=team)  # no answers
+    _answer(alice, 'PO1', 3)
+    result = team.culture_profile()
+    names = [m['name'] for m in result['members']]
+    assert names == ['Alice']
+    assert result['means']['PO'] == pytest.approx(3.0)
