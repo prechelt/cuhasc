@@ -99,28 +99,20 @@ TeamCultureProfile
 
 ## Next development steps
 
-- show ralph-loop.sh
-- show loop-prompt.md
-- Implement #2, try it out, review it, record required changes
-- Implement #3 ditto
-- Implement #4 ditto
+- review code of changes
+- create_member: language switching does not work with unfilled form
+- edit_member: visible comment on page?
 - perform changes and close issues
 - close parent issue #1
 - load_scales() should check consistency of 'levels' with actual number of levels.
 - show_team must display an absolute URL with host/port
+- Breadcrumb navigation, edit links on show page
+- forms: center labels below radio buttons, make buttons more visible (gray50)
 - Evaluate HTTP header for default language
+- superuser page and management command for getting its URL (fresh token each time)
 - NOT NEEDED: forbid cookie separators in names
 - add 'version' in cookie?
 
 
 ## Next step
 
-Consider docs/agents/loop-prompt.md and imagine you should be following these instructions
-(currently you should not; we're only talking _about_ them), in particular involving the tdd skill.
-For the totality of what you have read (inclucing AGENTS.md etc.), 
-point out instructions CONFL that you find conflicting or at severe tension.
-Point out information CONFU that you find confusing in other ways.
-Point out information REDUND that is redundant or superfluous.
-Point out instructions or information VAGUE that is overly vague.
-Don't get over-eager: Each category may well be empty. Point out only what you expect
-to create actual execution problems.
