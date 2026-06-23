@@ -1,5 +1,5 @@
 
-List issues.
+List open issues.
 Pick the **lowest-numbered issue labeled 'ready-for-agent'** and solve it.
 If there is no such issue, output "<promise>COMPLETE!</promise>" (precisely!) and stop.
 
