@@ -1,8 +1,8 @@
-{# Questionnaire language selector: a Bootstrap dropdown (ADR-0002). Each item is a
+{% comment %}Questionnaire language selector: a Bootstrap dropdown (ADR-0002). Each item is a
    submit button posting switch_language=<code>, so changing language POSTs the form
    with the in-progress answers and re-renders in the chosen language. Rows are two
    columns -- English name | autonym -- with the autonym column aligned at a common
-   left edge, and carry dir from the language's RTL/LTR flag. #}
+   left edge, and carry dir from the language's RTL/LTR flag.{% endcomment %}
 <div class="dropdown mb-3">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button"
             data-bs-toggle="dropdown" aria-expanded="false">
