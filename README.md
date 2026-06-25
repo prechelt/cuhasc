@@ -99,9 +99,7 @@ TeamCultureProfile
 
 ## Next development steps
 
-- review code of changes
-- create_member: language switching does not work with unfilled form
-- edit_member: visible comment on page?
+- move SVG generation to plots.py
 - perform changes and close issues
 - close parent issue #1
 - load_scales() should check consistency of 'levels' with actual number of levels.
@@ -116,21 +114,4 @@ TeamCultureProfile
 
 ## Next step
 
-We build an admin-page via which one can get back the teams and members links if
-cookies are lost.
 
-Introduce a model AdminPage, with token (str) as the only attribute.
-Only one instance of this will ever exist.
-It is created when the app's deployer calls
-python manage.py cuhasc-adminpage
-and the token initialized with a TOKEN_LENGTH_ADMINPAGE=20 random string.
-If it exists already, that management command will set a new token each time.
-It further prints the resulting full link to the admin page of the form
-http://localhost:port/adminpage/<token>
-
-The adminpage template shows a 
-"home" link at the top,
-followed by a heading "Teams and members",
-followed by a two-level nested list of Teams and each team's members.
-Teams are shown by their team name (link to show_team), "edit" link, "new member link" link.
-Members are shown by their member name (link to show_member), "edit" link.
