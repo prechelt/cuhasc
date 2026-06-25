@@ -1,6 +1,9 @@
-import pytest
+from io import StringIO
 
-from cuhasc.models import Member, QResult, Team
+import pytest
+from django.core.management import call_command
+
+from cuhasc.models import AdminPage, Member, QResult, Team
 
 
 @pytest.fixture
@@ -61,3 +64,26 @@ def test_team_culture_profile_omits_zero_answer_members(team):
     names = [m['name'] for m in result['members']]
     assert names == ['Alice']
     assert result['means']['PO'] == pytest.approx(3.0)
+
+
+# ---- cuhasc-adminpage management command ----
+
+def _run_adminpage_command() -> str:
+    out = StringIO()
+    call_command('cuhasc-adminpage', stdout=out)
+    return out.getvalue().strip()
+
+
+def test_adminpage_command_creates_singleton_and_prints_link(db):
+    link = _run_adminpage_command()
+    assert AdminPage.objects.count() == 1
+    token = AdminPage.objects.get().token
+    assert link.endswith(f'/adminpage/{token}')
+
+
+def test_adminpage_command_resets_token_without_adding_instances(db):
+    _run_adminpage_command()
+    first = AdminPage.objects.get().token
+    _run_adminpage_command()
+    assert AdminPage.objects.count() == 1            # still one instance
+    assert AdminPage.objects.get().token != first    # token refreshed

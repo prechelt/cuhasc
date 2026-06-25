@@ -10,6 +10,13 @@ def init_member_token() -> str:
     return base.random_token(c.TOKEN_LENGTH_MEMBER)
 
 
+class AdminPage(models.Model):
+    """Singleton holding the token for the admin page, via which a Culture Lead can
+    recover the Team and Member links if the cookie is lost. Created and re-tokened by
+    the ``cuhasc-adminpage`` management command; only one instance ever exists."""
+    token = models.CharField(max_length=c.TOKEN_LENGTH_ADMINPAGE)
+
+
 class Team(models.Model):
     name = models.CharField(max_length=100)
     token = models.CharField(max_length=c.TOKEN_LENGTH_TEAM)

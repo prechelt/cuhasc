@@ -1,0 +1,26 @@
+{% extends "cuhasc/base.html" %}
+
+{% block title %}Admin page{% endblock %}
+
+{% block content %}
+<a href="{% url 'home' %}">home</a>
+
+<h1>Teams and members</h1>
+<ul>
+    {% for team in teams %}
+    <li>
+        <a href="{% url 'show_team' team.id team.token %}">{{ team.name }}</a>
+        <a href="{% url 'edit_team' team.id team.token %}">edit</a>
+        <a href="{% url 'create_member' team.id team.member_token %}">new member link</a>
+        <ul>
+            {% for member in team.members.all %}
+            <li>
+                <a href="{% url 'show_member' member.id member.token %}">{{ member.name }}</a>
+                <a href="{% url 'edit_member' member.id member.token %}">edit</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

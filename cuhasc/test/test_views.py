@@ -5,7 +5,7 @@ from django.urls import reverse
 
 import cuhasc.constants as c
 import cuhasc.instruments as instruments
-from cuhasc.models import Member, QResult, Team
+from cuhasc.models import AdminPage, Member, QResult, Team
 
 
 @pytest.fixture
@@ -158,3 +158,23 @@ def test_create_member_initial_render_uses_cookie_language(client, team):
     url = reverse('create_member', args=[team.id, team.member_token])
     content = client.get(url).content.decode()
     assert 'stimme überhaupt nicht zu' in content            # German because cookie says 'de'
+
+
+# ---- adminpage: recover Team/Member links if the cookie is lost ----
+
+def test_adminpage_requires_correct_token(client, db):
+    AdminPage.objects.create(token='ADMINTKN01')
+    assert client.get(reverse('adminpage', args=['wrongtoken'])).status_code == 404
+    assert client.get(reverse('adminpage', args=['ADMINTKN01'])).status_code == 200
+
+
+def test_adminpage_lists_teams_and_members(client, member):
+    AdminPage.objects.create(token='ADMINTKN01')
+    content = client.get(reverse('adminpage', args=['ADMINTKN01'])).content.decode()
+    assert 'Teams and members' in content
+    assert reverse('show_team', args=[member.team.id, member.team.token]) in content
+    assert reverse('edit_team', args=[member.team.id, member.team.token]) in content
+    assert reverse('create_member', args=[member.team.id, member.team.member_token]) in content
+    assert reverse('show_member', args=[member.id, member.token]) in content
+    assert reverse('edit_member', args=[member.id, member.token]) in content
+    assert 'Alice' in content

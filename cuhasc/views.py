@@ -6,7 +6,7 @@ from cuhasc.cookies import CuhascCookie
 from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
 import cuhasc.i18n as i18n
 import cuhasc.instruments as instruments
-from cuhasc.models import Member, Team
+from cuhasc.models import AdminPage, Member, Team
 import cuhasc.constants as c
 
 DIMENSION_ORDER = ['PO', 'UN', 'CO', 'LT', 'MA']
@@ -196,6 +196,12 @@ def show_member(request, id, token):
     profile = member.culture_profile()
     svg = mark_safe(culture_profile_svg(profile, language)) if profile else None
     return render(request, "cuhasc/show_member.html", {'member': member, 'culture_profile_svg': svg})
+
+
+def adminpage(request, token):
+    get_object_or_404(AdminPage, token=token)
+    teams = Team.objects.prefetch_related('members').all()
+    return render(request, "cuhasc/adminpage.html", {'teams': teams})
 
 
 def edit_member(request, id, token):
