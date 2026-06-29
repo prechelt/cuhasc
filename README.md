@@ -99,6 +99,7 @@ TeamCultureProfile
 
 ## Next development steps
 
+- prompting for handbook, grill-with-docs, to-prd
 - move SVG generation to plots.py
 - perform changes and close issues
 - close parent issue #1
@@ -114,4 +115,49 @@ TeamCultureProfile
 
 ## Next step
 
+((Ein guter Prompt ist a) vollständig, b) eindeutig und c) genügend präzise. 
+Er beantwortet viele W-Fragen: Was, wann, wer, wo, warum, wie, wozu, wieviel, wohin.))
 
+WOZU 
+The purpose of Cuhasc is advising agile teams on possible, culturally induced execution problems
+with their agile process.
+WIE
+The team culture profile serves as input for diagnosing which of these problems are likely for the given team.
+WIE
+The advice is captured by the handbook.
+
+WIE The handbook consists of chapters (groups of advice).
+WAS Each piece of advice is called a section of the handbook.
+
+WIE A handbook section is a Markdown file with YAML topmatter that might look for instance as follows:
+
+```
+title: The xalsdijf is often ldfadlfowieru
+trigger: one-high(PD)
+---
+Here is the _text content_ of the advice.
+It may contain headings, enumerations, links, image references as needed.
+```
+
+WIE The name of the Markdown file is of the form `chaptername-keywords.md`,
+e.g. `dailystandup-xalsdijf-ldfadlfowieru.md`.
+WO They live in directory `handbook/`.
+
+WANN We load the entire handbook on application start.
+WO We serve them on pages `/handbook/dailystandup-xalsdijf-ldfadlfowieru` etc.
+
+WANN `show_team`, when the team culture profile plot is present, will show a list of
+links to applicable advice (shown as the title, grouped by chapter).
+
+WAS `trigger` describes the condition under which the advice applies to the given team.
+WIE The form shown assumes a fixed set of predicates, parameterized with the relevant dimension
+of the culture profile. One such predicate is given as a condition and the advice will be displayed
+if it evaluates to true.
+WARUM I like the clarity and simplicity of this approach.
+WARUM However, we do not understand the required conditions yet (the handbook is currently being researched),
+so I am worried whether it is flexible enough. 
+WAS Suggest two alternative approaches.
+
+WAS Suggest how to manage images.
+
+WAS Make sure external links do not expose tokens.
