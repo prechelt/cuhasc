@@ -36,38 +36,6 @@ A simple webapp with which software teams can determine their culture profile.
 4. Team Member fills in Culture Profile Questionnaire
 5. Cuhasc stores member identity in cookie so the Team Member can revisit their data
 
-### Usecase: View Culture Profile
-
-...
-
-
-## Analysis Model
-
-```
-CultureLead
-    name: str
-    associates Team
-
-Member
-    name: str
-    associates Team
-
-Team
-    name: str
-    associates Members
-    associates CultureProfileQuestionnaire
-    associates OverallCultureProfile
-
-CultureProfile
-    associates Member
-
-CultureProfileQuestionnaire
-    questions: list
-
-TeamCultureProfile
-    (aggregates the team's CultureProfiles)
-
-```
 
 ## Non-Functional Requirements
 
@@ -92,10 +60,6 @@ TeamCultureProfile
 - It will often be run on a developer's development machine.
 - ...
 
-
-## Method details
-
---
 
 ## Next development steps
 
