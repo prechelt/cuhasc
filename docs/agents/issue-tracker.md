@@ -1,22 +1,29 @@
-# Issue tracker: GitHub
+# Issue tracker: Markdown files
 
-Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Issues and PRDs for this repo live as Markdown files in directory `issues/`.
+Read the write them as plain files; there is no special tool for this.
 
-## Conventions
+Filesnames look like `issues/001-topic-of-this-particular-issue`.
+We use `001`, `002` etc. in the filenames but mention issues as `#1`, `#2` etc. as usual.
+The hind part is the slugified issue title.
 
-- **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
-- **Read an issue**: `gh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
-- **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.
-- **Comment on an issue**: `gh issue comment <number> --body "..."`
-- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
-- **Close**: `gh issue close <number> --comment "..."`
+Content uses YAML topmatter and looks for instance as follows
+```
+title: Topic of this particular issue
+state: open
+labels: ready-for-agent
+---
 
-Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
+# Topic of this particular issue
 
-## When a skill says "publish to the issue tracker"
+Description of the initial issue, can be short or long.
 
-Create a GitHub issue.
+## 2026-07-02, prechelt
 
-## When a skill says "fetch the relevant ticket"
+Comment (titled by commenting date and author username) of noteworthy event during handling the ticket.
+There can be zero or more such sections in any ticket.
+```
 
-Run `gh issue view <number> --comments`.
+- `title:` is a descriptive title  
+- `state:` is either `open` or `closed`  
+- `labels:` is a comma-separated list of mostly standardized labels according to `triage-labels.md`
