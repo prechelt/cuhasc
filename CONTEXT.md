@@ -33,3 +33,20 @@ _Avoid_: "individual evaluation".
 A team's aggregate result: the Culture Profiles of all Members plus the per-Dimension
 team mean Score. Named to mirror "Culture Profile".
 _Avoid_: "OverallCultureProfile", "team evaluation".
+
+**High Score** / **Low Score**:
+A Score of 4 or 5 is High; a Score of 1 or 2 is Low. Used to evaluate Triggers.
+
+## Handbook
+
+**Handbook Section**:
+A piece of team-culture advice: a Markdown file with YAML topmatter (`title`, `trigger`)
+plus a Markdown body, shown on the `show_team` page when its Trigger is fulfilled.
+Dimension codes referenced in a Trigger are the same codes used everywhere else (`PO`,
+`UN`, `CO`, `LT`, `MA`).
+
+**Trigger**:
+The condition attached to a Handbook Section, e.g. `one-high(PO)`, that decides whether
+the section is shown for a given team. Evaluated against individual Members' Scores
+(not the team mean Score) — `one-high(PO)` means at least one Team Member has a High
+Score on PO. The full set of Trigger conditions is not yet specified.
