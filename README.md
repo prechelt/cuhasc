@@ -63,7 +63,11 @@ A simple webapp with which software teams can determine their culture profile.
 
 ## Next development steps
 
-- prompting for handbook, grill-with-docs, to-prd
+- show git log
+- show `docs/agents/issue-tracker.md` (we keep issues out of GitHub for this branch)
+- prompting for handbook, /grill-with-docs, /to-prd, /to-issues
+- switch back to branch `main` (has the original prompt); /grill-with-docs, /to-prd, /to-issues
+
 - move SVG generation to plots.py
 - perform changes and close issues
 - close parent issue #1
@@ -79,8 +83,7 @@ A simple webapp with which software teams can determine their culture profile.
 
 ## Next step
 
-handbook structure
-handbook section display
+The following is an example of a handbook section:
 
 ```
 title: The xalsdijf is often ldfadlfowieru
@@ -89,3 +92,11 @@ trigger: one-high(PD)
 Here is the _text content_ of the advice.
 It may contain headings, enumerations, links, image references as needed.
 ```
+
+Each handbook section is stored as a Markdown file with YAML topmatter.
+A section is shown when its trigger condition is fulfilled.
+`one-high` is one example of such a trigger condition; we will specify the full set later.
+`PD` is the Hofstede dimension on which the trigger condition is evaluated.
+
+The handbook sections relevant for a team will be shown on the `show_team` page, below
+the plot.
