@@ -22,7 +22,7 @@ def load_scales(glob: str):
     _scales = {}
     for path in sorted(glob_module.glob(glob)):
         stem = Path(path).stem
-        lang = stem.split('-', 1)[1] if '-' in stem else stem
+        lang = stem.split('-', 1)[1] if '-' in stem else stem  # remove base part of name, if any
         scales = {}
         with open(path) as f:
             reader = csv.reader(f, delimiter=';')
@@ -33,7 +33,7 @@ def load_scales(glob: str):
                 name = row[0].strip()
                 levels = int(row[1])
                 labels = list(row[2:2 + levels])
-                assert levels == len(labels)
+                assert levels == len(labels), f"{path}: '{row}' should have {levels} levels, but has {len(levels)}"
                 scales[name] = labels
         _scales[lang] = scales
 
@@ -64,7 +64,7 @@ def load_dimensions(glob: str):
     for path in sorted(glob_module.glob(glob)):
         stem = Path(path).stem
         lang = stem.split('-', 1)[1] if '-' in stem else stem
-        dims = {}
+        dims = {}  # maps dimension ID to dimension fullname, e.g. PO -> Power Distance
         with open(path) as f:
             reader = csv.reader(f, delimiter=';')
             next(reader)  # skip header

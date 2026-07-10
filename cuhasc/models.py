@@ -58,9 +58,9 @@ class Member(models.Model):
 
     def culture_profile(self) -> dict[str, float]:
         answers: dict[str, list[int]] = defaultdict(list)
-        for qr in self.qresults.all():
-            dimension = qr.item.rstrip('0123456789')
-            answers[dimension].append(qr.value)
+        for qres in self.qresults.all():
+            dimension = qres.item.rstrip('0123456789')  # strip question number off the question ID, leaving the dimension name
+            answers[dimension].append(qres.value)
         return {dim: sum(vals) / len(vals) for dim, vals in answers.items()}
 
 
