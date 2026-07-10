@@ -33,3 +33,29 @@ _Avoid_: "individual evaluation".
 A team's aggregate result: the Culture Profiles of all Members plus the per-Dimension
 team mean Score. Named to mirror "Culture Profile".
 _Avoid_: "OverallCultureProfile", "team evaluation".
+
+**Handbook**:
+The collection of Sections, grouped into Chapters, from which Cuhasc advises a Team
+about culturally induced execution problems in its agile process.
+
+**Chapter**:
+A named group of related Sections in the Handbook.
+
+**Section**:
+One piece of advice in the Handbook: a Markdown file (with YAML frontmatter carrying
+its `title` and `trigger`) served at its own page.
+_Avoid_: "advice" (as a countable noun for one item), "topic", "article".
+
+**Trigger**:
+The condition, attached to a Section, that determines whether the Section applies to
+a given Team; evaluated against that Team's Team Culture Profile. Written as a single
+Predicate call, e.g. `one-high(PO)`.
+_Avoid_: "condition" (as a noun for the whole mechanism), "rule".
+
+**Predicate**:
+One named test usable inside a Trigger (e.g. `one-high`), taking a Dimension code as
+its argument and applying a fixed, code-defined cutoff (e.g. "high" means Score >= 4).
+A Predicate's name fixes both its cutoff comparison and whether it looks at individual
+Members (`one-high`, `all-low`) or the team mean (`mean-high`, `mean-low`) — there is no
+separate syntax for choosing that scope. The set of Predicates is fixed in code and
+extended by a developer, not by handbook authors.
