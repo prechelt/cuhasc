@@ -12,6 +12,7 @@ the source language)
 and write the not-yet-existing output file `cvscale-de.tsv` in the target language German,
 recognizing the target language by the ISO code 'de' for Deutsch/German in the target file name.
 Both files live in the `instruments/` directory.
+All input and outputfiles use UTF-8 encoding for any language.
 
 The input file codifies the original CVscale questionnaire for determining a person's profile 
 with respect to the five Hofstede cultural values dimensions.
