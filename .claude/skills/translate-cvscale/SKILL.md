@@ -16,8 +16,11 @@ Both files live in the `instruments/` directory.
 The input file codifies the original CVscale questionnaire for determining a person's profile 
 with respect to the five Hofstede cultural values dimensions.
 
+Also translate the related files `dimensions-en.csv` (codifying the names of the Hofstede dimensions)
+and `scales-en.csv` (codifying the levels of the ordinal scales used for the individual questionnaire items).
 
-# File format
+
+# File format for `cvscale-*.tsv`
 
 Input and output file use the same tab-separated values (tsv) format with three columns
 Item, Scale, Content (as declared by the header row, which remains untranslated).
@@ -73,6 +76,18 @@ Keep the overall form of the Content as a complete sentence vs. a mere phrase.
 Translate parenthetical glosses, if any.
 
 
+## File format for `dimensions-*.csv` and `scales-*.csv`
+
+Translate these two according to the same rules as the main `cvscale-*.tsv` file.
+The file format, however, is semicolon-separated CSV.
+
+For `scales-*.csv`, there will be conventional translations in most languages, that are used
+in scientific questionnaires. Use these.
+
+For `dimensions-*.csv`, include not only the translated name of each dimension,
+but keep the original name after a " / " separator as well (in the same field of course)
+as shown in `dimensions-de.csv`.
+
 
 # Reporting
 
@@ -86,3 +101,9 @@ and explain the two or three most difficult decisions in the translation process
 
 If the translation was straightforward throughout (because the target language allows to
 match each source item very well), say so instead of blowing up minor difficulties.
+
+
+# Language-specific notes
+
+# When translating into Arabic
+

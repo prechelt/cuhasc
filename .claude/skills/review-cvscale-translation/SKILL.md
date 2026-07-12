@@ -5,9 +5,9 @@ description: Check the adequacy of a CVscale questionnaire translation
 Usage e.g. /translate-cvscale cvscale-en.tsv cvscale-de.tsv 
 
 Find and read the definition of the 'translate-cvscale' skill, but do not perform these actions right now.
-Find and read the source file and target file given as arguments to the present skill call.
-The target file was produced by 
-`/translate-cvscale cvscale-en.tsv cvscale-de.tsv`.
+Find and read the source files and target files given as arguments to the present skill call.
+The target files were produced by 
+`/translate-cvscale cvscale-en.tsv cvscale-de.tsv` or similar.
 
 Check the quality of the translation:
 Consider each item and check whether rules SEM, AMB, LAM, CON, and UNI have been obeyed properly.
