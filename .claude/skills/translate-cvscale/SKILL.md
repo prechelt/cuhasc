@@ -122,8 +122,5 @@ and explain the two or three most difficult decisions in the translation process
 If the translation was straightforward throughout (because the target language allows to
 match each source item very well), say so instead of blowing up minor difficulties.
 
-
-# Language-specific notes
-
-# When translating into Arabic
-
+Show the report and also write it into `instruments/translation-notes/notes-en-de.md` (i.e.,
+named according to source language and target language).
