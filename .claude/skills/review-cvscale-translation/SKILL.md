@@ -16,3 +16,6 @@ Report such cases. Provide an argument why your proposal is superior.
 
 If this list of translation mistakes comes out empty (and only then), 
 report items where the translation is at least questionable. Explain why.
+
+Write the report into `instruments/translation-reviews/review-en-de.md` 
+(using the ISO codes of source language and target language).
