@@ -76,6 +76,25 @@ Keep the overall form of the Content as a complete sentence vs. a mere phrase.
 Translate parenthetical glosses, if any.
 
 
+# Procedural hint: Characterize the target language first
+
+Before translating, briefly characterize how the target language differs from English
+on the axes that stress the rules above, and let that analysis drive item-level choices:
+
+- Register / variety split: does the written standard differ from everyday speech, or
+  vary by region? Prefer wording stable across the varieties respondents span, so
+  responses stay comparable.
+- Derivational morphology: do shared roots/stems make UNI easy to honor — or easy to
+  violate by accident, forging a link across items the source keeps separate?
+- Polysemy / register layering: is the natural word likely to carry a classical,
+  religious, or literary secondary sense English lacks? (AMB / LAM)
+- Connotation & culture: for PO, CO, and MA especially, does ordinary usage load
+  authority, group loyalty, or gender roles with a stronger positive or more obligatory
+  valence than the neutral English? Match the source's valence, don't amplify it. (CON)
+- Gender & honorifics: does grammar force gender or social-status marking English leaves
+  unmarked? Seek neutral forms; fall back to convention consistently.
+
+
 ## File format for `dimensions-*.csv` and `scales-*.csv`
 
 Translate these two according to the same rules as the main `cvscale-*.tsv` file.
