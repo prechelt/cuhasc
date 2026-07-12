@@ -1,0 +1,52 @@
+isocode;name;speakers;notes
+zh;Chinese;1193;1
+es;Spanish;484;
+hi;Hindi;432;2
+en;English;380;DONE
+pt;Portuguese;260;
+bn;Bengali;259;3
+ar;Arabic;245;4
+ru;Russian;154;
+ja;Japanese;125;
+pa;Punjabi;100;5
+de;German;95;DONE
+vi;Vietnamese;85;
+tr;Turkish;84;
+te;Telugu;83;
+mr;Marathi;83;
+ko;Korean;80;
+fr;French;78;
+ta;Tamil;78;
+ur;Urdu;70;
+jv;Javanese;68;
+ha;Hausa;65;
+it;Italian;65;
+th;Thai;60;7
+gu;Gujarati;57;
+fa;Persian;57;
+kn;Kannada;48;
+id;Indonesian;45;
+yo;Yoruba;43;
+pl;Polish;42;
+ml;Malayalam;38;
+or;Odia;38;
+my;Burmese;38;
+uz;Uzbek;32;
+sd;Sindhi;32;
+am;Amharic;32;
+ig;Igbo;31;
+nl;Dutch;26;
+ro;Romanian;25;
+ne;Nepali;25;
+az;Azerbaijani;24;
+as;Assamese;24;
+mg;Malagasy;22;
+kk;Kazakh;21;
+si;Sinhala;20;
+# 1 Chinese: Merged with Cantonese, Wu, and Xiang, plus other Chinese topolects, since these use Standard Written Chinese for official/written purposes.
+# 2 Hindi: Merged with Bhojpuri and Maithili, which are predominantly recorded as Hindi in official/written contexts in India.
+# 3 Bengali: Merged with the Chittagong dialect.
+# 4 Arabic: Merged with spoken Egyptian, Levantine, and North Mesopotamian Arabic; written/official documents consistently use Modern Standard Arabic (MSA).
+# 5 Punjabi: Merged with Lahnda (Western Punjabi); both are recorded as Punjabi in writing (Gurmukhi and Shahmukhi scripts respectively).
+# 6 German: Speaker count varies considerably by source (75-134 million), depending on whether only Germany or also Austria/Switzerland/worldwide minorities are included.
+# 7 Thai: Merged with regional Thai varieties (Isan/Northeastern, Northern, and Southern Thai), which use the standard Thai script for written/official purposes.
