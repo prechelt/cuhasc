@@ -122,5 +122,9 @@ and explain the two or three most difficult decisions in the translation process
 If the translation was straightforward throughout (because the target language allows to
 match each source item very well), say so instead of blowing up minor difficulties.
 
+If you feel your capabilities in the target language are or may be insufficient for 
+providing a translation of the level of quality you can provide for a major language, 
+shortly characterize the main difficulties.
+
 Show the report and also write it into `instruments/translation-notes/notes-en-de.md` (i.e.,
 named according to source language and target language).
