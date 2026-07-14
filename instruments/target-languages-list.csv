@@ -4,7 +4,7 @@ es;Spanish;484;DONE
 hi;Hindi;432;DONE, 2
 en;English;380;DONE
 pt;Portuguese;260;DONE
-bn;Bengali;259;3
+bn;Bengali;259;DONE, 3
 ar;Arabic;245;4
 ru;Russian;154;
 ja;Japanese;125;
@@ -45,7 +45,7 @@ kk;Kazakh;21;low-resource
 si;Sinhala;20;low-resource
 # 1 Chinese: using Simplified Chinese script (std. in mainland China, Singapore), not Traditional Chinese (Taiwan, Hong Kong, Macau)
 # 2 Hindi: Includes Bhojpuri and Maithili, which are predominantly recorded as Hindi in official/written contexts in India.
-# 3 Bengali: Includes with the Chittagong dialect.
+# 3 Bengali: Includes Chittagong dialect.
 # 4 Arabic: Covers spoken Egyptian, Levantine, and North Mesopotamian Arabic; written/official documents consistently use Modern Standard Arabic (MSA).
 # 5 Punjabi: Includes Lahnda (Western Punjabi); both are recorded as Punjabi in writing (Gurmukhi and Shahmukhi scripts respectively).
 # 6 German: Speaker count varies considerably by source (75-134 million), depending on whether only Germany or also Austria/Switzerland/worldwide minorities are included.
