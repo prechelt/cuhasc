@@ -35,6 +35,7 @@ uz;Uzbek;32;low-resource
 sd;Sindhi;32;low-resource
 am;Amharic;32;low-resource
 ig;Igbo;31;low-resource
+uk;Ukrainian;27;
 nl;Dutch;26;
 ro;Romanian;25;
 ne;Nepali;25;low-resource
@@ -43,6 +44,24 @@ as;Assamese;24;low-resource
 mg;Malagasy;22;low-resource
 kk;Kazakh;21;low-resource
 si;Sinhala;20;low-resource
+# ----- some languages we want that are below the 20 mio native speakers cutoff
+sq;Albanian;8;
+bg;Bulgarian;8;
+cs;Czech;11;
+da;Danish;6;
+et;Estonian;1;
+fi;Finnish;5;
+ka;Georgian;4;low-resource
+el;Greek;13;
+hu;Hungarian;13;
+hr;Croatian;6;
+lv;Latvian;2;
+lt;Lithuanian;3;
+no;Norwegian;5;8
+sr;Serbian;9;9
+sk;Slovak;5;
+sl;Slovenian;2;
+sv;Swedish;10;
 # 1 Chinese: using Simplified Chinese script (std. in mainland China, Singapore), not Traditional Chinese (Taiwan, Hong Kong, Macau)
 # 2 Hindi: Includes Bhojpuri and Maithili, which are predominantly recorded as Hindi in official/written contexts in India.
 # 3 Bengali: Includes Chittagong dialect.
@@ -50,3 +69,7 @@ si;Sinhala;20;low-resource
 # 5 Punjabi: Includes Lahnda (Western Punjabi); both are recorded as Punjabi in writing (Gurmukhi and Shahmukhi scripts respectively).
 # 6 German: Speaker count varies considerably by source (75-134 million), depending on whether only Germany or also Austria/Switzerland/worldwide minorities are included.
 # 7 Thai: Merged with regional Thai varieties (Isan/Northeastern, Northern, and Southern Thai), which use the standard Thai script for written/official purposes.
+# 8 Norwegian: Two official written standards exist (Bokmål, the majority form, and Nynorsk); default to Bokmål unless Nynorsk is requested.
+# 9 Serbian: Written in both Cyrillic and Latin scripts; Cyrillic is the official/traditional script, Latin is widely used in practice.
+# 'speakers' is the best-estimate number of native speakers of this language in millions
+# 'low-resource' means the LLM is not sure it will be able to provide a good-quality (as opposed to near-perfect) translation
