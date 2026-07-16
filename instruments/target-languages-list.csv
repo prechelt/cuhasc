@@ -57,11 +57,11 @@ hu;Hungarian;13;DONE, check collocational naturalness in three LT phrasings
 hr;Croatian;6;DONE
 lv;Latvian;2;DONE
 lt;Lithuanian;3;DONE, check fine collocational naturalness in 2 places
-no;Norwegian;5;8
-sr;Serbian;9;9
-sk;Slovak;5;
-sl;Slovenian;2;
-sv;Swedish;10;
+no;Norwegian;5;DONE, 8
+sr;Serbian;9;DONE, 9
+sk;Slovak;5;DONE
+sl;Slovenian;2;DONE
+sv;Swedish;10;DONE
 # 1 Chinese: using Simplified Chinese script (std. in mainland China, Singapore), not Traditional Chinese (Taiwan, Hong Kong, Macau)
 # 2 Hindi: Includes Bhojpuri and Maithili, which are predominantly recorded as Hindi in official/written contexts in India.
 # 3 Bengali: Includes Chittagong dialect.
