@@ -1,0 +1,27 @@
+Item	Scale	Content
+PO1	disagree5	Kõrgemal positsioonil olevad inimesed peaksid tegema enamiku otsustest ilma madalamal positsioonil olevate inimestega nõu pidamata.
+PO2	disagree5	Kõrgemal positsioonil olevad inimesed ei peaks liiga sageli küsima madalamal positsioonil olevate inimeste arvamust.
+PO3	disagree5	Kõrgemal positsioonil olevad inimesed peaksid vältima sotsiaalset läbikäimist madalamal positsioonil olevate inimestega.
+PO4	disagree5	Madalamal positsioonil olevad inimesed ei peaks olema eriarvamusel kõrgemal positsioonil olevate inimeste otsuste suhtes.
+PO5	disagree5	Kõrgemal positsioonil olevad inimesed ei peaks delegeerima olulisi ülesandeid madalamal positsioonil olevatele inimestele.
+UN1	disagree5	On oluline, et juhised oleksid üksikasjalikult lahti kirjutatud, nii et ma alati tean, mida minult oodatakse.
+UN2	disagree5	On oluline juhiseid ja protseduure täpselt järgida.
+UN3	disagree5	Reeglid ja eeskirjad on olulised, sest need annavad mulle teada, mida minult oodatakse.
+UN4	disagree5	Standarditud tööprotseduurid on abiks.
+UN5	disagree5	Toimingute juhised on olulised.
+CO1	disagree5	Üksikisikud peaksid ohverdama enda huvid grupi nimel.
+CO2	disagree5	Üksikisikud peaksid jääma grupi juurde ka raskuste korral.
+CO3	disagree5	Grupi heaolu on olulisem kui üksikisiku tasud.
+CO4	disagree5	Grupi edu on olulisem kui üksikisiku edu.
+CO5	disagree5	Üksikisikud peaksid oma eesmärke taotlema alles pärast seda, kui nad on arvesse võtnud grupi heaolu.
+CO6	disagree5	Grupilojaalsust tuleks soodustada isegi siis, kui üksikisiku eesmärgid kannatavad.
+LT1	important5	Rahaga hoolikas ümberkäimine (säästlikkus)
+LT2	important5	Kindlameelne edasiminek vaatamata vastuseisule (visadus)
+LT3	important5	Isiklik püsivus ja stabiilsus
+LT4	important5	Pikaajaline planeerimine
+LT5	important5	Tänasest lõbust loobumine tuleviku edu nimel
+LT6	important5	Kõvasti töötamine tuleviku edu nimel
+MA1	disagree5	Meeste jaoks on ametialane karjäär olulisem kui naiste jaoks.
+MA2	disagree5	Mehed lahendavad probleeme tavaliselt loogilise analüüsi abil; naised lahendavad probleeme tavaliselt intuitsiooni abil.
+MA3	disagree5	Raskete probleemide lahendamine nõuab tavaliselt aktiivset, jõulist lähenemisviisi, mis on meestele tüüpiline.
+MA4	disagree5	On mõned tegevused, mida mees oskab alati paremini teha kui naine.
