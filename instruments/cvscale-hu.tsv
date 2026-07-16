@@ -1,0 +1,27 @@
+Item	Scale	Content
+PO1	disagree5	A magasabb beosztásban lévő embereknek a legtöbb döntést az alacsonyabb beosztásban lévő emberekkel való egyeztetés nélkül kellene meghozniuk.
+PO2	disagree5	A magasabb beosztásban lévő embereknek nem kellene túl gyakran kikérniük az alacsonyabb beosztásban lévő emberek véleményét.
+PO3	disagree5	A magasabb beosztásban lévő embereknek kerülniük kellene a társas érintkezést az alacsonyabb beosztásban lévő emberekkel.
+PO4	disagree5	Az alacsonyabb beosztásban lévő embereknek nem kellene ellentmondaniuk a magasabb beosztásban lévő emberek döntéseinek.
+PO5	disagree5	A magasabb beosztásban lévő embereknek nem kellene fontos feladatokat átruházniuk az alacsonyabb beosztásban lévő emberekre.
+UN1	disagree5	Fontos, hogy az utasítások részletesen ki legyenek fejtve, hogy mindig tudjam, mit kell tennem.
+UN2	disagree5	Fontos az utasítások és eljárások pontos betartása.
+UN3	disagree5	A szabályok és előírások fontosak, mert tájékoztatnak arról, mit várnak el tőlem.
+UN4	disagree5	A szabványosított munkaeljárások hasznosak.
+UN5	disagree5	A működési utasítások fontosak.
+CO1	disagree5	Az egyéneknek fel kellene áldozniuk az önérdeküket a csoportért.
+CO2	disagree5	Az egyéneknek a nehézségek idején is a csoport mellett kellene maradniuk.
+CO3	disagree5	A csoport jóléte fontosabb, mint az egyéni jutalmak.
+CO4	disagree5	A csoport sikere fontosabb, mint az egyéni siker.
+CO5	disagree5	Az egyéneknek csak azután kellene a céljaikat követniük, hogy figyelembe vették a csoport jólétét.
+CO6	disagree5	A csoport iránti hűséget még akkor is ösztönözni kellene, ha az egyéni célok hátrányt szenvednek.
+LT1	important5	A pénz gondos kezelése (Takarékosság)
+LT2	important5	Elszánt továbbhaladás az ellenállás ellenére (Kitartás)
+LT3	important5	Személyes állhatatosság és stabilitás
+LT4	important5	Hosszú távú tervezés
+LT5	important5	A mai szórakozásról való lemondás a jövőbeli siker érdekében
+LT6	important5	Kemény munka a jövőbeli siker érdekében
+MA1	disagree5	A férfiak számára fontosabb a szakmai karrier, mint a nők számára.
+MA2	disagree5	A férfiak általában logikai elemzéssel oldják meg a problémákat; a nők általában intuícióval oldják meg a problémákat.
+MA3	disagree5	A nehéz problémák megoldása általában aktív, erőteljes megközelítést igényel, ami a férfiakra jellemző.
+MA4	disagree5	Vannak bizonyos tevékenységek, amelyeket egy férfi mindig jobban el tud végezni, mint egy nő.
