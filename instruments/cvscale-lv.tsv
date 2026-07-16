@@ -1,0 +1,27 @@
+Item	Scale	Content
+PO1	disagree5	Cilvēkiem augstākos amatos vajadzētu pieņemt lielāko daļu lēmumu, nekonsultējoties ar cilvēkiem zemākos amatos.
+PO2	disagree5	Cilvēkiem augstākos amatos nevajadzētu pārāk bieži jautāt zemākos amatos esošo cilvēku viedokli.
+PO3	disagree5	Cilvēkiem augstākos amatos vajadzētu izvairīties no sociālas saskarsmes ar cilvēkiem zemākos amatos.
+PO4	disagree5	Cilvēkiem zemākos amatos nevajadzētu nepiekrist augstākos amatos esošo cilvēku lēmumiem.
+PO5	disagree5	Cilvēkiem augstākos amatos nevajadzētu deleģēt svarīgus uzdevumus cilvēkiem zemākos amatos.
+UN1	disagree5	Ir svarīgi, ka norādījumi ir detalizēti izklāstīti, lai es vienmēr zinātu, kas no manis tiek gaidīts.
+UN2	disagree5	Ir svarīgi cieši ievērot norādījumus un procedūras.
+UN3	disagree5	Noteikumi un reglamenti ir svarīgi, jo tie informē mani par to, kas no manis tiek gaidīts.
+UN4	disagree5	Standartizētas darba procedūras ir noderīgas.
+UN5	disagree5	Norādījumi par darbībām ir svarīgi.
+CO1	disagree5	Indivīdiem vajadzētu upurēt savas intereses grupas labā.
+CO2	disagree5	Indivīdiem vajadzētu turēties pie grupas pat grūtībās.
+CO3	disagree5	Grupas labklājība ir svarīgāka nekā individuāls atalgojums.
+CO4	disagree5	Grupas panākumi ir svarīgāki nekā individuāli panākumi.
+CO5	disagree5	Indivīdiem vajadzētu tiekties pēc saviem mērķiem tikai pēc tam, kad ir apsvērta grupas labklājība.
+CO6	disagree5	Grupas lojalitāte būtu jāveicina, pat ja cieš individuāli mērķi.
+LT1	important5	Rūpīga naudas pārvaldīšana (taupība)
+LT2	important5	Apņēmīga turpināšana, neraugoties uz pretestību (neatlaidība)
+LT3	important5	Personiska noturība un stabilitāte
+LT4	important5	Ilgtermiņa plānošana
+LT5	important5	Atteikšanās no šodienas priekiem nākotnes panākumu labā
+LT6	important5	Smags darbs nākotnes panākumu labā
+MA1	disagree5	Profesionāla karjera vīriešiem ir svarīgāka nekā sievietēm.
+MA2	disagree5	Vīrieši parasti risina problēmas ar loģisku analīzi; sievietes parasti risina problēmas ar intuīciju.
+MA3	disagree5	Sarežģītu problēmu risināšana parasti prasa aktīvu, spēcīgu pieeju, kas ir raksturīga vīriešiem.
+MA4	disagree5	Ir daži darbi, ko vīrietis vienmēr var paveikt labāk nekā sieviete.
