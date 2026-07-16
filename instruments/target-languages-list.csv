@@ -45,18 +45,18 @@ mg;Malagasy;22;low-resource
 kk;Kazakh;21;low-resource
 si;Sinhala;20;low-resource
 # ----- some languages we want that are below the 20 mio native speakers cutoff
-sq;Albanian;8;
-bg;Bulgarian;8;
-cs;Czech;11;
-da;Danish;6;
-et;Estonian;1;
-fi;Finnish;5;
+sq;Albanian;8;DONE, no established Hofstede dimension names are known to Opus
+bg;Bulgarian;8;DONE
+cs;Czech;11;DONE
+da;Danish;6;DONE
+et;Estonian;1;DONE, native reviewer should check the Likert anchors
+fi;Finnish;5;DONE, 'I am less confident [...] about fine collocational naturalness'
 ka;Georgian;4;low-resource
-el;Greek;13;
-hu;Hungarian;13;
-hr;Croatian;6;
-lv;Latvian;2;
-lt;Lithuanian;3;
+el;Greek;13;DONE
+hu;Hungarian;13;DONE, check collocational naturalness in three LT phrasings
+hr;Croatian;6;DONE
+lv;Latvian;2;DONE
+lt;Lithuanian;3;DONE, check fine collocational naturalness in 2 places
 no;Norwegian;5;8
 sr;Serbian;9;9
 sk;Slovak;5;
