@@ -6,6 +6,7 @@ Find a project overview in README.md.
 Project-specific conventions:
 - Declare parameter and result types for functions, except duck-typed params or `None` results. 
   Declare class attributes. Do not declare local variables.
+- Position private helper functions at the end of their file, in alphabetical order.
 - Tests for module `abc.defg` go into module `abc.test.test_defg`.
 - Use special pytest mechanisms (e.g. parametrize) where truly useful.
 - Adding a test means adding an assertion, not necessarily a new test function:
