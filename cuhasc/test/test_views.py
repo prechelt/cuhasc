@@ -201,6 +201,32 @@ def test_create_member_initial_render_uses_cookie_language(client, team):
     assert 'stimme überhaupt nicht zu' in content            # German because cookie says 'de'
 
 
+def test_create_member_initial_render_uses_accept_language_without_cookie(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    content = client.get(url, HTTP_ACCEPT_LANGUAGE='de').content.decode()
+    assert 'stimme überhaupt nicht zu' in content            # German from Accept-Language header
+
+
+def test_create_member_accept_language_picks_first_supported_tag(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    # 'xx' is not a cuhasc language and is preferred (q=1.0 by default) over 'de' (q=0.5)
+    content = client.get(url, HTTP_ACCEPT_LANGUAGE='xx,de;q=0.5').content.decode()
+    assert 'stimme überhaupt nicht zu' in content
+
+
+def test_create_member_cookie_language_wins_over_accept_language(client, team):
+    client.cookies[c.COOKIE_NAME] = json.dumps({'roles': [], 'language': 'en'})
+    url = reverse('create_member', args=[team.id, team.member_token])
+    content = client.get(url, HTTP_ACCEPT_LANGUAGE='de').content.decode()
+    assert 'strongly disagree' in content                   # cookie's 'en' wins over header's 'de'
+
+
+def test_create_member_initial_render_defaults_to_english_without_cookie_or_header(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    content = client.get(url).content.decode()
+    assert 'strongly disagree' in content
+
+
 # ---- adminpage: recover Team/Member links if the cookie is lost ----
 
 def test_adminpage_requires_correct_token(client, db):

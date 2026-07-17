@@ -98,7 +98,7 @@ def create_member(request, team_id, member_token):
     team = get_object_or_404(Team, id=team_id, member_token=member_token)
     cookie = CuhascCookie(request)
     if request.method == 'GET':
-        language = _resolve_language(cookie)
+        language = _resolve_language(cookie, request.headers)
         form = MemberForm()
         qform = QuestionnaireForm(instruments.get_questionnaire(language),
                                   instruments.get_scales(language))
@@ -120,7 +120,7 @@ def create_member(request, team_id, member_token):
                                **_selector_context(language)})
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
-        language = _resolve_language(cookie)
+        language = _resolve_language(cookie, request.headers)
         form = MemberForm(request.POST)
         qform = QuestionnaireForm(instruments.get_questionnaire(language),
                                   instruments.get_scales(language), request.POST)
@@ -184,7 +184,7 @@ def edit_member(request, id, token):
     member = get_object_or_404(Member, id=id, token=token)
     cookie = CuhascCookie(request)
     if request.method == 'GET':
-        language = _resolve_language(cookie)
+        language = _resolve_language(cookie, request.headers)
         form = MemberForm(instance=member)
         existing = {qr.item: str(qr.value) for qr in member.qresults.all()}
         qform = QuestionnaireForm(instruments.get_questionnaire(language),
@@ -207,7 +207,7 @@ def edit_member(request, id, token):
                                **_selector_context(language)})
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
-        language = _resolve_language(cookie)
+        language = _resolve_language(cookie, request.headers)
         form = MemberForm(request.POST, instance=member)
         qform = QuestionnaireForm(instruments.get_questionnaire(language),
                                   instruments.get_scales(language), request.POST)
@@ -253,11 +253,37 @@ def _matching_sections_by_chapter(team_profile: dict) -> dict[str, list[handbook
     return result
 
 
-def _resolve_language(cookie) -> str:
+def _resolve_language(cookie, headers) -> str:
     """Questionnaire language for the initial render: cookie choice if still available,
-    else English. (HTTP Accept-Language detection is out of scope, see ADR-0002.)"""
+    else the first language in the request's Accept-Language header that cuhasc supports,
+    else English. See ADR-0002."""
     lang = cookie.get_language()
-    return lang if lang in instruments.get_languages() else 'en'
+    if lang in instruments.get_languages():
+        return lang
+    available = instruments.get_languages()
+    for tag in _parse_accept_language(headers.get('Accept-Language', '')):
+        primary = tag.split('-', 1)[0].lower()
+        if primary in available:
+            return primary
+    return 'en'
+
+
+def _parse_accept_language(header: str) -> list[str]:
+    """Language tags from an Accept-Language header value, ordered by descending
+    quality (ties keep the header's original order, per RFC 9110 12.5.4)."""
+    entries = []
+    for part in header.split(','):
+        part = part.strip()
+        if not part:
+            continue
+        tag, _, q = part.partition(';')
+        try:
+            quality = float(q.strip().removeprefix('q=')) if q else 1.0
+        except ValueError:
+            quality = 1.0
+        entries.append((tag.strip(), quality))
+    entries.sort(key=lambda entry: entry[1], reverse=True)
+    return [tag for tag, _ in entries]
 
 
 def _selector_context(language: str) -> dict:

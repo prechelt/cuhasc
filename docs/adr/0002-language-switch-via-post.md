@@ -14,5 +14,6 @@ persists the language to the cookie in the same request, and keeps the cookie's 
 owned solely by `CuhascCookie`. A merely-switching POST never shows validation errors;
 only a real submit validates.
 
-Initial render picks the language from the cookie, falling back to English. Evaluating the
-HTTP Accept-Language header for the initial default is deferred (a separate README next-step).
+Initial render picks the language from the cookie; if the cookie carries none, it falls back
+to the first language in the request's `Accept-Language` header that cuhasc supports; if none
+of those match either, it falls back to English.
