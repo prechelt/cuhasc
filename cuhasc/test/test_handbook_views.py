@@ -1,7 +1,8 @@
 import pytest
 from django.urls import reverse
 
-import cuhasc.handbook_content as handbook_content
+import cuhasc.constants as c
+import cuhasc.handbook as handbook
 
 
 def write_section(tmp_path, filename: str, title: str = "A Title",
@@ -15,7 +16,7 @@ def write_section(tmp_path, filename: str, title: str = "A Title",
 def image_pool(tmp_path, monkeypatch):
     pool = tmp_path / 'img'
     pool.mkdir()
-    monkeypatch.setattr(handbook_content, 'IMAGE_POOL_DIR', pool)
+    monkeypatch.setattr(c, 'IMAGE_POOL_DIR', pool)
     return pool
 
 
@@ -24,7 +25,7 @@ def image_pool(tmp_path, monkeypatch):
 def test_handbook_section_renders_title_and_body_html(client, tmp_path):
     write_section(tmp_path, "dailystandup-punctuality.md",
                   title="Punctuality", body="# Heading\n\nShow up **on time**.\n")
-    handbook_content.load_sections(str(tmp_path / '*.md'))
+    handbook.load_sections(str(tmp_path / '*.md'))
     content = client.get(reverse('handbook_section', args=["dailystandup-punctuality"])).content.decode()
     assert "Punctuality" in content
     assert "<h1>Heading</h1>" in content
@@ -33,14 +34,14 @@ def test_handbook_section_renders_title_and_body_html(client, tmp_path):
 
 def test_handbook_section_404_for_unknown_slug(client, tmp_path):
     write_section(tmp_path, "dailystandup-punctuality.md")
-    handbook_content.load_sections(str(tmp_path / '*.md'))
+    handbook.load_sections(str(tmp_path / '*.md'))
     response = client.get(reverse('handbook_section', args=["no-such-slug"]))
     assert response.status_code == 404
 
 
 def test_handbook_section_url_and_html_carry_no_team_or_member_token(client, tmp_path):
     write_section(tmp_path, "dailystandup-punctuality.md", title="Punctuality")
-    handbook_content.load_sections(str(tmp_path / '*.md'))
+    handbook.load_sections(str(tmp_path / '*.md'))
     url = reverse('handbook_section', args=["dailystandup-punctuality"])
     assert url == "/handbook/dailystandup-punctuality"
 

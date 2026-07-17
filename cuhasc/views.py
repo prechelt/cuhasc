@@ -3,14 +3,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import FileResponse, Http404, HttpResponseNotAllowed
 from django.utils.safestring import mark_safe
 
-from cuhasc.cookies import CuhascCookie
-from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
-import cuhasc.handbook_content as handbook_content
+import cuhasc.constants as c
+import cuhasc.handbook as handbook
 import cuhasc.i18n as i18n
 import cuhasc.instruments as instruments
+from cuhasc.cookies import CuhascCookie
+from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
 from cuhasc.models import AdminPage, Member, Team
 from cuhasc.plots import culture_profile_svg, team_culture_profile_svg
-import cuhasc.constants as c
 
 
 def _resolve_language(cookie) -> str:
@@ -141,7 +141,7 @@ def adminpage(request, token):
 
 
 def handbook_section(request, slug):
-    section = handbook_content.get_section_by_slug(slug)
+    section = handbook.get_section_by_slug(slug)
     if section is None:
         raise Http404
     body_html = mark_safe(markdown.markdown(section.body))
@@ -152,7 +152,7 @@ def handbook_section(request, slug):
 def handbook_image(request, filename):
     if '/' in filename or filename in ('.', '..'):
         raise Http404
-    path = handbook_content.IMAGE_POOL_DIR / filename
+    path = c.IMAGE_POOL_DIR / filename
     if not path.is_file():
         raise Http404
     return FileResponse(path.open('rb'))

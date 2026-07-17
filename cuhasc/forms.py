@@ -16,6 +16,7 @@ class MemberForm(forms.ModelForm):
 
 
 class QuestionnaireForm(forms.Form):
+    """Dynamic, internationalized form."""
     def __init__(self, items, scales, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._items = items

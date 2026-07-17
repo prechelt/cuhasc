@@ -1,3 +1,6 @@
+"""
+Manages loading and providing the various language versions of the questionnaire(s).
+"""
 import csv
 import glob as glob_module
 from dataclasses import dataclass

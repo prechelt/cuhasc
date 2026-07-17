@@ -18,6 +18,7 @@ class AdminPage(models.Model):
 
 
 class Team(models.Model):
+    """One team, the top-level entity around which the entire process revolves."""
     name = models.CharField(max_length=100)
     token = models.CharField(max_length=c.TOKEN_LENGTH_TEAM)
     member_token = models.CharField(max_length=c.TOKEN_LENGTH_MEMBER,
@@ -47,6 +48,7 @@ class Team(models.Model):
 
 
 class Member(models.Model):
+    """One Team member."""
     name = models.CharField(max_length=100)
     token = models.CharField(max_length=c.TOKEN_LENGTH_MEMBER)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
@@ -65,6 +67,7 @@ class Member(models.Model):
 
 
 class QResult(models.Model):
+    """Questionnaire result: one answer for one item."""
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='qresults')
     item = models.CharField(max_length=20)
     scale = models.CharField(max_length=50)

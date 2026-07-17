@@ -1,18 +1,52 @@
-"""Trigger parsing and Predicate evaluation for the Handbook.
+"""Content loading for the Handbook.
 
 A Trigger is a single Predicate call of the fixed shape ``predicate-name(DIMENSION)``,
 e.g. ``one-high(PO)``, evaluated against a Team Culture Profile as produced by
 ``Team.culture_profile()``.
+
+Content loading mirrors the eager-load-at-import pattern of ``instruments.py``: each
+Section file lives in the handbook content directory, named ``chaptername-keywords.md``,
+holding YAML frontmatter and a Markdown body.
 """
 
+import glob as glob_module
 import re
+from dataclasses import dataclass
+from pathlib import Path
 
+import yaml
+
+import cuhasc.constants as c
 import cuhasc.instruments as instruments
 
-HIGH_CUTOFF: float = 4.0  # a Score at or above this is "high"
-LOW_CUTOFF: float = 2.0   # a Score at or below this is "low"
+IMAGE_URL_PREFIX = '/handbook/img/'
 
+REQUIRED_ATTRS = {"title", "trigger"}  # mandatory frontmatter in a handbook section
+
+FRONTMATTER_REGEXP = re.compile(r"^---\n(.*?\n)---\n(.*)$", re.DOTALL)
+IMAGE_REF_REGEXP = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
 TRIGGER_REGEXP = re.compile(r"^([a-z]+(?:-[a-z]+)*)\(([A-Za-z]+)\)$")
+_URL_SCHEME_REGEXP = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://")
+
+# a placeholder Team Culture Profile with no Members: safe to evaluate any valid
+# trigger against, since it can only ever make a Predicate return False, never raise.
+_EMPTY_PROFILE = {'members': [], 'means': {}}
+
+
+class SectionError(ValueError):
+    """An invalid Section file. Its message names the offending file and problem."""
+
+
+@dataclass
+class Section:
+    title: str
+    trigger: str
+    chapter: str
+    slug: str
+    body: str
+
+
+_sections: list[Section] = []
 
 
 class TriggerError(ValueError):
@@ -25,47 +59,39 @@ def member_scores(team_profile: dict, dimension: str) -> list[float]:
             if dimension in member['profile']]
 
 
-def count_high(team_profile: dict, dimension: str) -> int:
-    return sum(1 for score in member_scores(team_profile, dimension) if score >= HIGH_CUTOFF)
+def predicate_one_high(team_profile: dict, dimension: str) -> bool:
+    return _predicate_count_high(team_profile, dimension) >= 1
 
 
-def count_low(team_profile: dict, dimension: str) -> int:
-    return sum(1 for score in member_scores(team_profile, dimension) if score <= LOW_CUTOFF)
+def predicate_two_high(team_profile: dict, dimension: str) -> bool:
+    return _predicate_count_high(team_profile, dimension) >= 2
 
 
-def one_high(team_profile: dict, dimension: str) -> bool:
-    return count_high(team_profile, dimension) >= 1
+def predicate_one_low(team_profile: dict, dimension: str) -> bool:
+    return _predicate_count_low(team_profile, dimension) >= 1
 
 
-def two_high(team_profile: dict, dimension: str) -> bool:
-    return count_high(team_profile, dimension) >= 2
+def predicate_two_low(team_profile: dict, dimension: str) -> bool:
+    return _predicate_count_low(team_profile, dimension) >= 2
 
 
-def one_low(team_profile: dict, dimension: str) -> bool:
-    return count_low(team_profile, dimension) >= 1
-
-
-def two_low(team_profile: dict, dimension: str) -> bool:
-    return count_low(team_profile, dimension) >= 2
-
-
-def mean_high(team_profile: dict, dimension: str) -> bool:
+def predicate_mean_high(team_profile: dict, dimension: str) -> bool:
     mean = team_profile['means'].get(dimension)
-    return mean is not None and mean >= HIGH_CUTOFF
+    return mean is not None and mean >= c.HIGH_CUTOFF
 
 
-def mean_low(team_profile: dict, dimension: str) -> bool:
+def predicate_mean_low(team_profile: dict, dimension: str) -> bool:
     mean = team_profile['means'].get(dimension)
-    return mean is not None and mean <= LOW_CUTOFF
+    return mean is not None and mean <= c.LOW_CUTOFF
 
 
 PREDICATES: dict = {  # Predicate name -> callable(team_profile, dimension) -> bool
-    'one-high': one_high,
-    'two-high': two_high,
-    'one-low': one_low,
-    'two-low': two_low,
-    'mean-high': mean_high,
-    'mean-low': mean_low,
+    'one-high': predicate_one_high,
+    'two-high': predicate_two_high,
+    'one-low': predicate_one_low,
+    'two-low': predicate_two_low,
+    'mean-high': predicate_mean_high,
+    'mean-low': predicate_mean_low,
 }
 
 
@@ -82,3 +108,86 @@ def evaluate(trigger: str, team_profile: dict) -> bool:
         raise TriggerError(f"unknown dimension '{dimension}' in trigger '{trigger}': "
                            f"known dimensions are {', '.join(instruments.DIMENSIONS)}")
     return PREDICATES[name](team_profile, dimension)
+
+
+def load_sections(glob: str):
+    global _sections
+    _sections = []
+    for path in sorted(glob_module.glob(glob)):
+        _sections.append(_load_one(Path(path)))
+
+
+def get_section_by_slug(slug: str) -> Section | None:
+    for section in _sections:
+        if section.slug == slug:
+            return section
+    return None
+
+
+def get_sections_by_chapter() -> dict[str, list[Section]]:
+    """The loaded Sections grouped by Chapter, in filename order within each Chapter,
+    and Chapters in filename order."""
+    result: dict[str, list[Section]] = {}
+    for section in _sections:
+        result.setdefault(section.chapter, []).append(section)
+    return result
+
+
+def _load_one(path: Path) -> Section:
+    frontmatter, body = _parse_frontmatter(path)
+    trigger = frontmatter['trigger']
+    try:
+        evaluate(trigger, _EMPTY_PROFILE)  # see whether trigger is valid
+    except TriggerError as e:
+        raise SectionError(f"{path}: {e}") from e
+    body = _resolve_images(path, body)
+    stem = path.stem
+    chapter = stem.split('-', 1)[0]
+    return Section(title=frontmatter['title'], trigger=trigger, chapter=chapter, slug=stem, body=body)
+
+
+def _is_local_image_ref(target: str) -> bool:
+    return not target.startswith('/') and not _URL_SCHEME_REGEXP.match(target)
+
+
+def _resolve_images(path: Path, body: str) -> str:
+    """Rewrite local image references to the handbook_image view's URL, verifying
+    each referenced file exists in the image pool. External references (a scheme or
+    a leading '/') are passed through unchanged and never checked for existence."""
+    def replace(match: re.Match) -> str:
+        alt, target = match.group(1), match.group(2)
+        if not _is_local_image_ref(target):
+            return match.group(0)
+        if not (c.IMAGE_POOL_DIR / target).is_file():
+            raise SectionError(f"{path}: missing local image file: {target}")
+        return f"![{alt}]({IMAGE_URL_PREFIX}{target})"
+    return IMAGE_REF_REGEXP.sub(replace, body)
+
+
+def _parse_frontmatter(path: Path) -> tuple[dict, str]:
+    text = path.read_text()
+    match = FRONTMATTER_REGEXP.match(text)
+    if not match:
+        raise SectionError(f"{path}: missing YAML frontmatter delimited by '---' lines")
+    yaml_text, body = match.groups()
+    try:
+        frontmatter = yaml.safe_load(yaml_text)
+    except yaml.YAMLError as e:
+        raise SectionError(f"{path}: unparsable YAML frontmatter: {e}") from e
+    if not isinstance(frontmatter, dict):
+        raise SectionError(f"{path}: frontmatter must be a YAML mapping with {sorted(REQUIRED_ATTRS)}")
+    missing = REQUIRED_ATTRS - frontmatter.keys()
+    if missing:
+        raise SectionError(f"{path}: missing required frontmatter attribute(s): {', '.join(sorted(missing))}")
+    return frontmatter, body
+
+
+def _predicate_count_high(team_profile: dict, dimension: str) -> int:
+    return sum(1 for score in member_scores(team_profile, dimension) if score >= c.HIGH_CUTOFF)
+
+
+def _predicate_count_low(team_profile: dict, dimension: str) -> int:
+    return sum(1 for score in member_scores(team_profile, dimension) if score <= c.LOW_CUTOFF)
+
+
+load_sections(str(c.HANDBOOK_DIR / '*-*.md'))

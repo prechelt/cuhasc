@@ -9,6 +9,7 @@ import cuhasc.constants as c
 
 @dataclass
 class Role:
+    """Cookie representation of one Team or Member."""
     classname: str
     id: int
     token: str
