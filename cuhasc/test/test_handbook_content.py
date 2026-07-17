@@ -81,3 +81,65 @@ def test_malformed_trigger_grammar_aborts_naming_file(tmp_path):
     path = write_section(tmp_path, "dailystandup-broken.md", trigger="one-high(PO) and two-low(UN)")
     with pytest.raises(handbook_content.SectionError, match=f"{re.escape(str(path))}.*trigger"):
         handbook_content.load_sections(str(tmp_path / '*.md'))
+
+
+# ---- image references (#10) ----
+
+@pytest.fixture
+def image_pool(tmp_path, monkeypatch):
+    pool = tmp_path / 'img'
+    pool.mkdir()
+    monkeypatch.setattr(handbook_content, 'IMAGE_POOL_DIR', pool)
+    return pool
+
+
+def test_local_image_reference_rewritten_to_image_view_url(tmp_path, image_pool):
+    (image_pool / 'foo.png').write_text('fake png bytes')
+    write_section(tmp_path, "dailystandup-a.md", body="See ![alt text](foo.png) above.\n")
+    handbook_content.load_sections(str(tmp_path / '*.md'))
+    section = handbook_content.get_sections_by_chapter()['dailystandup'][0]
+    assert section.body == "See ![alt text](/handbook/img/foo.png) above.\n"
+
+
+def test_external_image_reference_with_scheme_left_unchanged(tmp_path, image_pool):
+    write_section(tmp_path, "dailystandup-a.md", body="![alt](https://example.com/x.png)\n")
+    handbook_content.load_sections(str(tmp_path / '*.md'))
+    section = handbook_content.get_sections_by_chapter()['dailystandup'][0]
+    assert section.body == "![alt](https://example.com/x.png)\n"
+
+
+def test_external_image_reference_with_leading_slash_left_unchanged(tmp_path, image_pool):
+    write_section(tmp_path, "dailystandup-a.md", body="![alt](/static/x.png)\n")
+    handbook_content.load_sections(str(tmp_path / '*.md'))
+    section = handbook_content.get_sections_by_chapter()['dailystandup'][0]
+    assert section.body == "![alt](/static/x.png)\n"
+
+
+def test_missing_local_image_aborts_naming_file_and_filename(tmp_path, image_pool):
+    path = write_section(tmp_path, "dailystandup-broken.md", body="![alt](missing.png)\n")
+    with pytest.raises(handbook_content.SectionError, match=f"{re.escape(str(path))}.*missing.png"):
+        handbook_content.load_sections(str(tmp_path / '*.md'))
+
+
+def test_external_image_reference_never_triggers_existence_check(tmp_path, image_pool):
+    # no file created in image_pool at all; an external reference must not be checked
+    write_section(tmp_path, "dailystandup-a.md", body="![alt](https://example.com/missing.png)\n")
+    handbook_content.load_sections(str(tmp_path / '*.md'))  # must not raise
+    section = handbook_content.get_sections_by_chapter()['dailystandup'][0]
+    assert section.body == "![alt](https://example.com/missing.png)\n"
+
+
+# ---- lookup by slug ----
+
+def test_get_section_by_slug_returns_matching_section(tmp_path):
+    write_section(tmp_path, "dailystandup-punctuality.md", title="Punctuality")
+    handbook_content.load_sections(str(tmp_path / '*.md'))
+    section = handbook_content.get_section_by_slug("dailystandup-punctuality")
+    assert section is not None
+    assert section.title == "Punctuality"
+
+
+def test_get_section_by_slug_returns_none_for_unknown_slug(tmp_path):
+    write_section(tmp_path, "dailystandup-punctuality.md")
+    handbook_content.load_sections(str(tmp_path / '*.md'))
+    assert handbook_content.get_section_by_slug("no-such-slug") is None

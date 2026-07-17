@@ -15,10 +15,14 @@ import yaml
 import cuhasc.handbook as handbook
 
 HANDBOOK_DIR = Path(__file__).resolve().parent.parent / 'handbook'
+IMAGE_POOL_DIR = HANDBOOK_DIR / 'img'
+IMAGE_URL_PREFIX = '/handbook/img/'
 
 REQUIRED_ATTRS = {"title", "trigger"}
 
 FRONTMATTER_REGEXP = re.compile(r"^---\n(.*?\n)---\n(.*)$", re.DOTALL)
+IMAGE_REF_REGEXP = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
+_URL_SCHEME_REGEXP = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://")
 
 # a placeholder Team Culture Profile with no Members: safe to evaluate any valid
 # trigger against, since it can only ever make a Predicate return False, never raise.
@@ -55,9 +59,28 @@ def _load_one(path: Path) -> Section:
         handbook.evaluate(trigger, _EMPTY_PROFILE)
     except handbook.TriggerError as e:
         raise SectionError(f"{path}: {e}") from e
+    body = _resolve_images(path, body)
     stem = path.stem
     chapter = stem.split('-', 1)[0]
     return Section(title=frontmatter['title'], trigger=trigger, chapter=chapter, slug=stem, body=body)
+
+
+def _is_local_image_ref(target: str) -> bool:
+    return not target.startswith('/') and not _URL_SCHEME_REGEXP.match(target)
+
+
+def _resolve_images(path: Path, body: str) -> str:
+    """Rewrite local image references to the handbook_image view's URL, verifying
+    each referenced file exists in the image pool. External references (a scheme or
+    a leading '/') are passed through unchanged and never checked for existence."""
+    def replace(match: re.Match) -> str:
+        alt, target = match.group(1), match.group(2)
+        if not _is_local_image_ref(target):
+            return match.group(0)
+        if not (IMAGE_POOL_DIR / target).is_file():
+            raise SectionError(f"{path}: missing local image file: {target}")
+        return f"![{alt}]({IMAGE_URL_PREFIX}{target})"
+    return IMAGE_REF_REGEXP.sub(replace, body)
 
 
 def _parse_frontmatter(path: Path) -> tuple[dict, str]:
@@ -76,6 +99,13 @@ def _parse_frontmatter(path: Path) -> tuple[dict, str]:
     if missing:
         raise SectionError(f"{path}: missing required frontmatter attribute(s): {', '.join(sorted(missing))}")
     return frontmatter, body
+
+
+def get_section_by_slug(slug: str) -> Section | None:
+    for section in _sections:
+        if section.slug == slug:
+            return section
+    return None
 
 
 def get_sections_by_chapter() -> dict[str, list[Section]]:
