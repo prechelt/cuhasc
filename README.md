@@ -1,121 +1,124 @@
 # CuHaSc: Culture Handbook for Scrum
 
-A simple webapp with which software teams can determine their culture profile.
+A simple webapp with which agile software development teams can determine their culture profile
+and receive advice on plausible agile process execution problems that may arise from it.
 
-## Functional Requirements
+Cuhasc is based on Python and Django. 
+It uses SQlite3 as the RDBMS and Django's development webserver for HTTP
+in order to provide the simplest possible deyployment.
+The application itself is also kept extremely simple.
 
-### Roles
 
-- Culture Lead: The person starting, leading, and moderating the process. (Often the Scrum Master.)
-- Team Member (often shorter called Member): : Any person in the software development team, including the Culture Lead.
-- Team: The set of all Team Members.
+## 1. How it works
 
-### Overview Usecase
-
-1. Culture Lead sets up a Culture Profiling process for one new Team in Cuhasc.
-2. Cuhasc provides a joint URL for the Team Members to use
-3. Culture Lead sends URL to all Team Members
+1. Culture Lead (often the Scrum Master) sets up a Culture Profiling process for one new Team in Cuhasc.
+   (Technically, anybody can set up a new Team at any time.)
+2. Cuhasc provides a joint URL for the Team Members to use.
+3. Culture Lead sends URL to all Team Members.
+   There are no accounts, just confidential tokens in URLs and a cookie that remembers them.
 4. Each Team Member visits URL and fills in the Culture Profile Questionnaire.
-5. Cuhasc computes the member's Culture Profile
-6. Culture Lead shows and explains the Overall Culture Profile to the Team
-(7. Cuhasc advises Team about likely consequences of its Overall Culture Profile)
+   The questionnaire is available in 40 languages; Members should use their native language.
+5. Cuhasc computes the member's Culture Profile, the team's Overall Culture Profile,
+   and the resulting list of likely agile process execution problems.
+   The handbook embedded in the app knows about many such problems and will show exactly
+   those that are likely to apply to the given team.
+6. Culture Lead discusses the individual execution problems with the team.
 
-### Usecase: Set up Culture Profiling
-
-1. Culture Lead starts Cuhasc
-2. Cuhasc offers to create a new Team
-3. Culture Lead creates the Team and gives it a name
-4. Cuhasc provides a unique non-guessable Team-URL
-5. Culture Lead sends the Team-URL to all Team Members
-
-### Usecase: Fill Culture Questionnaire
-
-1. Team Member receives the Team-URL and visits it
-2. Cuhasc shows Team name, asks for member name (or member pseudonym)
-3. Cuhasc shows Culture Profile Questionnaire
-4. Team Member fills in Culture Profile Questionnaire
-5. Cuhasc stores member identity in cookie so the Team Member can revisit their data
+For the handbook content, see
+[handbook/](handbook/).
+Each file there is one examples of an agile process execution problem.
 
 
-## Non-Functional Requirements
+## 2. The science behind it
 
-- Cuhasc runs on any Linux, Windows or macOS system that has Python 3 installed. 
+The culture profile is based on the famous 
+[Hofstede dimensions](https://en.wikipedia.org/wiki/Hofstede%27s_cultural_dimensions_theory)
+of national cultures.
 
+The specific questionnaire used is the psychometrically validated 
+[CVscale](https://www.tandfonline.com/doi/pdf/10.1080/08961530.2011.578059),
+which transfers the Hofstede dimensions to the level of an individual 
+(where Hofstede's original questionnaire applied only at the national level).
 
-## Architecture
+CVscale is originally avaiable in English.
+The many translations provided here were worked out by 
+[Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8) 
+instructed by a sophisticated 
+[prompt](.claude/skills/translate-cvscale/SKILL.md)
+that ensures that the meaning of each item is kept the same as much as possible
+in each language, despite problems with different registers of language use,
+unwanted term parallels or term variations,
+lower or higher or different ambiguity of an otherwise-suitable term,
+unwanted connotations of otherwise-suitable terms, and other subleties.
 
-- Cuhasc is based on Python and Django
-- It uses SQlite3 as the RDBMS.
-- It obeys a `verb_modeltype` naming convention (e.g. `create_team`, `show_team`, `edit_team`) 
-  for URLs, view names, view function names, template names, etc.
-- It uses no user accounts, authentication, or explicit groups for teams etc.
-  Rather, it relies on random tokens for authorization, 
-  on the distribution of unguessable URLs via email for group formation, and
-  on a cookie for keeping track of the unguessable URLs pertaining to a user.
+This is important, because the meaning of the Overall Culture Profile is well-defined only
+if the questionnaire means the same to all members in all its cultural facets.
+If you want to scrutinize the difficulties for your target language(s),
+review the 
+[translation notes](instruments/translation-notes).
 
+The agile execution problems represented in the handbook were found by a
+literature search through the rather extensive research literature on agile software development,
+looking for those few of the many articles that describe problems with enough detail that they
+can be traced to (likely) team-cultural causes.
 
-## Deployment
-
-- Cuhasc is distributed as a single file
-- It will often be run on a developer's development machine.
-- ...
-
-
-## Next development steps
-
-- prompting for handbook, grill-with-docs, to-prd
-- move SVG generation to plots.py
-- perform changes and close issues
-- close parent issue #1
-- load_scales() should check consistency of 'levels' with actual number of levels.
-- show_team must display an absolute URL with host/port
-- Breadcrumb navigation, edit links on show page
-- forms: center labels below radio buttons, make buttons more visible (gray50)
-- Evaluate HTTP header for default language
-- superuser page and management command for getting its URL (fresh token each time)
-- NOT NEEDED: forbid cookie separators in names
-- add 'version' in cookie?
+TODO: The handbook provides pointers to the specific research articles underlying each handbook section.
 
 
-## Next step
+## 3. Installation/deployment
 
-The purpose of Cuhasc is advising agile teams on possible, culturally induced execution problems
-with their agile process.
-The team culture profile serves as input for diagnosing which of these problems are likely for the given team.
-The advice is captured by the handbook.
+- Cuhasc runs on any Linux, Windows or macOS system that has Python 3.12 or higher installed. 
+- It is meant to be used by a single team only, but can also be used by several teams that trust each other.
+- There are four modes in which you can install and run it:
+  - 3.1: On a proper server that all users can reach.
+  - 3.2: On your developer machine in a LAN if all Team Members are in that LAN and you have opened
+    the firewall on your machine.
+  - 3.3: On your developer machine, using `cloudflared` or `ngrok` for 
+    making it visible as a pseudo-public server via a tunnel.
+    This involves some (fairly simple) setup for the operator and uses the free tier of a commercial service.
+    Drawback: The URL so-created remains valid only until the next reboot or even standby.
+  - 3.4: On your developer machine, using `tailscale` for creating a private network for your team only.
+    This involves some (reasonably simple) setup for each team member and 
+    also uses the free tier of a commercial service.
 
-The handbook consists of chapters (groups of advice).
-Each piece of advice is called a section of the handbook.
+### 3.0 Basic install
 
-A handbook section is a Markdown file with YAML topmatter that might look for instance as follows:
+(TODO: flesh out)
 
-```
-title: The xalsdijf is often ldfadlfowieru
-trigger: one-high(PD)
----
-Here is the _text content_ of the advice.
-It may contain headings, enumerations, links, image references as needed.
-```
+- Python
+- pipx(?)
+- run: `python manage.py runserver 0.0.0.0:8037`
 
-The name of the Markdown file is of the form `chaptername-keywords.md`,
-e.g. `dailystandup-xalsdijf-ldfadlfowieru.md`.
-They live in directory `handbook/`.
+### 3.1 Running on a proper server
 
-We load the entire handbook on application start.
-We serve them on pages `/handbook/dailystandup-xalsdijf-ldfadlfowieru` etc.
+(TODO: flesh out)
 
-`show_team`, when the team culture profile plot is present, will show a list of
-links to applicable advice (shown as the title, grouped by chapter).
 
-`trigger` describes the condition under which the advice applies to the given team.
-The form shown assumes a fixed set of predicates, parameterized with the relevant dimension
-of the culture profile. One such predicate is given as a condition and the advice will be displayed
-if it evaluates to true.
-I like the clarity and simplicity of this approach.
-However, we do not understand the required conditions yet (the handbook is currently being researched),
-so I am worried whether it is flexible enough. 
-Suggest two alternative approaches.
+### 3.2 Running on a developer machine in a joint LAN
 
-Suggest how to manage images.
+(TODO: flesh out)
 
-Make sure external links do not expose tokens.
+
+### 3.3 Running on a developer machine via `cloudflared` or `ngrok` tunnel (--> temporary public server)
+
+(TODO: flesh out)
+
+
+### 3.4 Running on a developer machine via a `tailscale` network (--> semi-permanent group-private server)
+
+(TODO: flesh out)
+
+
+## 4. Admin/superuser access
+
+If you lost both your team-level URL and the cookie that stored it,
+you can retrieve the URL by calling 
+`python manage.py cuhasc-adminpage`.
+It will print the path part of a URL. Append this to the homepage URL in your browser URL bar.
+The page will show links to all objects in the database.
+
+
+## 5. Next development steps
+
+- form: should the scale run right-to-left in a RTL language?
+
