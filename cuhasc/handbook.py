@@ -2,12 +2,13 @@
 
 A Trigger is a single Predicate call of the fixed shape ``predicate-name(DIMENSION)``,
 e.g. ``one-high(PO)``, evaluated against a Team Culture Profile as produced by
-``Team.culture_profile()``. Plain Python: no Django, no I/O.
+``Team.culture_profile()``.
 """
 
 import re
 
-DIMENSIONS: tuple[str, ...] = ('PO', 'UN', 'CO', 'LT', 'MA')
+import cuhasc.instruments as instruments
+
 HIGH_CUTOFF: float = 4.0  # a Score at or above this is "high"
 LOW_CUTOFF: float = 2.0   # a Score at or below this is "low"
 
@@ -24,12 +25,28 @@ def member_scores(team_profile: dict, dimension: str) -> list[float]:
             if dimension in member['profile']]
 
 
+def count_high(team_profile: dict, dimension: str) -> int:
+    return sum(1 for score in member_scores(team_profile, dimension) if score >= HIGH_CUTOFF)
+
+
+def count_low(team_profile: dict, dimension: str) -> int:
+    return sum(1 for score in member_scores(team_profile, dimension) if score <= LOW_CUTOFF)
+
+
 def one_high(team_profile: dict, dimension: str) -> bool:
-    return any(score >= HIGH_CUTOFF for score in member_scores(team_profile, dimension))
+    return count_high(team_profile, dimension) >= 1
 
 
-def all_low(team_profile: dict, dimension: str) -> bool:
-    return all(score <= LOW_CUTOFF for score in member_scores(team_profile, dimension))
+def two_high(team_profile: dict, dimension: str) -> bool:
+    return count_high(team_profile, dimension) >= 2
+
+
+def one_low(team_profile: dict, dimension: str) -> bool:
+    return count_low(team_profile, dimension) >= 1
+
+
+def two_low(team_profile: dict, dimension: str) -> bool:
+    return count_low(team_profile, dimension) >= 2
 
 
 def mean_high(team_profile: dict, dimension: str) -> bool:
@@ -44,7 +61,9 @@ def mean_low(team_profile: dict, dimension: str) -> bool:
 
 PREDICATES: dict = {  # Predicate name -> callable(team_profile, dimension) -> bool
     'one-high': one_high,
-    'all-low': all_low,
+    'two-high': two_high,
+    'one-low': one_low,
+    'two-low': two_low,
     'mean-high': mean_high,
     'mean-low': mean_low,
 }
@@ -59,7 +78,7 @@ def evaluate(trigger: str, team_profile: dict) -> bool:
     if name not in PREDICATES:
         raise TriggerError(f"unknown predicate '{name}' in trigger '{trigger}': "
                            f"known predicates are {', '.join(sorted(PREDICATES))}")
-    if dimension not in DIMENSIONS:
+    if dimension not in instruments.DIMENSIONS:
         raise TriggerError(f"unknown dimension '{dimension}' in trigger '{trigger}': "
-                           f"known dimensions are {', '.join(DIMENSIONS)}")
+                           f"known dimensions are {', '.join(instruments.DIMENSIONS)}")
     return PREDICATES[name](team_profile, dimension)

@@ -5,6 +5,8 @@ from pathlib import Path
 
 INSTRUMENTS_DIR = Path(__file__).resolve().parent.parent / 'instruments'
 
+DIMENSIONS: tuple[str, ...] = ('PO', 'UN', 'CO', 'LT', 'MA')  # the five Hofstede Dimensions
+
 _scales: dict = {}        # language code -> {scale_name: [labels]}
 _questionnaires: dict = {}  # language code -> [Item]
 _dimensions: dict = {}    # language code -> {dimension_code: name}

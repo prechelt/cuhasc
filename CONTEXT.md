@@ -56,6 +56,6 @@ _Avoid_: "condition" (as a noun for the whole mechanism), "rule".
 One named test usable inside a Trigger (e.g. `one-high`), taking a Dimension code as
 its argument and applying a fixed, code-defined cutoff (e.g. "high" means Score >= 4).
 A Predicate's name fixes both its cutoff comparison and whether it looks at individual
-Members (`one-high`, `all-low`) or the team mean (`mean-high`, `mean-low`) — there is no
-separate syntax for choosing that scope. The set of Predicates is fixed in code and
+Members (`one-high`, `two-high`, `one-low`, `two-low`) or the team mean (`mean-high`,
+`mean-low`) — there is no separate syntax for choosing that scope. The set of Predicates is fixed in code and
 extended by a developer, not by handbook authors.

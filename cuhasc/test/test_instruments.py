@@ -10,9 +10,12 @@ def test_get_dimension_name_ok():
 
 @pytest.mark.parametrize('language', ['en', 'de'])
 def test_get_dimension_name_has_all_five_dimensions(language):
-    for code in ['PO', 'UN', 'CO', 'LT', 'MA']:
+    assert instruments.DIMENSIONS == ('PO', 'UN', 'CO', 'LT', 'MA')
+    for code in instruments.DIMENSIONS:
         name = instruments.get_dimension_name(code, language)
         assert isinstance(name, str) and name, f"missing {language} name for {code}"
+    assert set(instruments._dimensions[language]) == set(instruments.DIMENSIONS), \
+        f"{language} dimensions file and DIMENSIONS disagree"
 
 
 def test_get_languages_requires_questionnaire_scales_and_dimensions(monkeypatch):
