@@ -13,9 +13,9 @@
         <li>
             <button type="submit" name="switch_language" value="{{ lang.code }}"
                     class="dropdown-item d-grid gap-3" style="grid-template-columns: 9rem auto;"
-                    dir="{{ lang.dir }}" formnovalidate>
+                    formnovalidate>
                 <span class="text-start">{{ lang.english }}</span>
-                <span class="text-start">{{ lang.autonym }}</span>
+                <span class="text-start" dir="{{ lang.dir }}">{{ lang.autonym }}</span>
             </button>
         </li>
         {% endfor %}
