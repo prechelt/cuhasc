@@ -9,8 +9,12 @@
     {{ form.as_p }}
     {% include "cuhasc/_language_selector.html" %}
     <h2 class="mt-4">Questionnaire</h2>
+    {% comment %}dir on this wrapper flips the option row via CSS (flex-direction:row
+       reads start-to-end per the bidi direction) so RTL languages show the scale
+       right-to-left; it does not reorder qform's choices, so option values (and thus
+       the polarity saved by save_results) are unaffected.{% endcomment %}
     {% for item_field in qform %}
-    <div class="mb-3">
+    <div class="mb-3" dir="{{ current_language.dir }}">
         <div class="fw-semibold mb-1">{{ item_field.label }}</div>
         {% if item_field.errors %}
         <div class="text-danger small">{{ item_field.errors }}</div>
