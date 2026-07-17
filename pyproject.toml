@@ -19,6 +19,7 @@ python = "^3.11"
 django = "^6.0"
 django-crispy-forms = "^2.3"
 crispy-bootstrap5 = ">=2024.10"
+pyyaml = "^6.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0"
