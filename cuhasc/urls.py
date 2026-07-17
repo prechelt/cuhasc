@@ -10,4 +10,6 @@ urlpatterns = [
     path("show_member/<int:id>/<str:token>", views.show_member, name="show_member"),
     path("edit_member/<int:id>/<str:token>", views.edit_member, name="edit_member"),
     path("adminpage/<str:token>", views.adminpage, name="adminpage"),
+    path("handbook/img/<str:filename>", views.handbook_image, name="handbook_image"),
+    path("handbook/<str:slug>", views.handbook_section, name="handbook_section"),
 ]
