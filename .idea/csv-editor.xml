@@ -59,6 +59,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\instruments\dimensions-hr.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\dimensions-hu.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\instruments\dimensions-it.csv">
           <value>
             <Attribute>
@@ -66,7 +80,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\instruments\dimensions-lv.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\instruments\dimensions-nl.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\dimensions-no.csv">
           <value>
             <Attribute>
               <option name="separator" value=";" />
@@ -87,7 +115,35 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\instruments\dimensions-sk.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\dimensions-sl.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\instruments\dimensions-sq.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\dimensions-sr.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\dimensions-sv.csv">
           <value>
             <Attribute>
               <option name="separator" value=";" />
@@ -178,6 +234,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\instruments\scales-hr.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\scales-hu.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\instruments\scales-it.csv">
           <value>
             <Attribute>
@@ -185,7 +255,28 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\instruments\scales-lt.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\scales-lv.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\instruments\scales-nl.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\scales-no.csv">
           <value>
             <Attribute>
               <option name="separator" value=";" />
@@ -206,7 +297,35 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\instruments\scales-sk.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\scales-sl.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\instruments\scales-sq.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\scales-sr.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\instruments\scales-sv.csv">
           <value>
             <Attribute>
               <option name="separator" value=";" />
