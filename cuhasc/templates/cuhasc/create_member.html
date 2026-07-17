@@ -3,6 +3,7 @@
 {% block title %}Join Team {{ team.name }}{% endblock %}
 
 {% block content %}
+{{ breadcrumb }}
 <h1>Join Team "{{ team.name }}"</h1>
 <form method="post">
     {% csrf_token %}

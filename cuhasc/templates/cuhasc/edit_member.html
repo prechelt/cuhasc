@@ -3,6 +3,7 @@
 {% block title %}Edit Member "{{ member.name }}"{% endblock %}
 
 {% block content %}
+{{ breadcrumb }}
 <h1>Edit Member "{{ member.name }}"</h1>
 <form method="post">
     {% csrf_token %}

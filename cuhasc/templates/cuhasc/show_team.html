@@ -3,6 +3,7 @@
 {% block title %}Team "{{ team.name }}"{% endblock %}
 
 {% block content %}
+{{ breadcrumb }}
 <h1>Team "{{ team.name }}"</h1>
 <p>Share this link with your team members:</p>
 <a href="{% url 'create_member' team.id team.member_token %}">{% url 'create_member' team.id team.member_token %}</a>

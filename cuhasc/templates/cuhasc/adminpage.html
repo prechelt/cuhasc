@@ -3,8 +3,7 @@
 {% block title %}Admin page{% endblock %}
 
 {% block content %}
-<a href="{% url 'home' %}">home</a>
-
+{{ breadcrumb }}
 <h1>Teams and members</h1>
 <ul>
     {% for team in teams %}

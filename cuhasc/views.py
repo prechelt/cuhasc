@@ -1,6 +1,8 @@
 import markdown
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import FileResponse, Http404, HttpResponseNotAllowed
+from django.urls import reverse
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 import cuhasc.constants as c
@@ -12,20 +14,21 @@ from cuhasc.forms import MemberForm, QuestionnaireForm, TeamForm
 from cuhasc.models import AdminPage, Member, Team
 from cuhasc.plots import culture_profile_svg, team_culture_profile_svg
 
-
-def _resolve_language(cookie) -> str:
-    """Questionnaire language for the initial render: cookie choice if still available,
-    else English. (HTTP Accept-Language detection is out of scope, see ADR-0002.)"""
-    lang = cookie.get_language()
-    return lang if lang in instruments.get_languages() else 'en'
+BREADCRUMB_SEPARATOR = ' / '
+BREADCRUMB_STYLE = 'margin-bottom: 1.5ex;'
 
 
-def _selector_context(language: str) -> dict:
-    """Template context for the questionnaire language selector."""
-    return {
-        'languages': i18n.language_options(instruments.get_languages()),
-        'current_language': i18n.language_options([language])[0],
-    }
+def breadcrumb(*crumbs: tuple[str, str | None]) -> str:
+    """A breadcrumb nav built from (label, url) pairs given root-first. A url of None
+    renders that crumb as plain text (used for pages with no view to link to, and for
+    labels that must not carry a confidential token, e.g. a Team's name on Member-facing
+    pages). The last crumb is always plain text, since it names the current page."""
+    *ancestors, (current_label, _) = crumbs
+    parts = [f'<a href="{escape(url)}">{escape(label)}</a>' if url else escape(label)
+             for label, url in ancestors]
+    parts.append(escape(current_label))
+    html = BREADCRUMB_SEPARATOR.join(parts)
+    return mark_safe(f'<nav class="crumb-nav" style="{BREADCRUMB_STYLE}">{html}</nav>')
 
 
 def home(request):
@@ -33,13 +36,15 @@ def home(request):
     return render(request, "cuhasc/home.html", {
         'teams': cookie.teams,
         'members': cookie.members,
+        'breadcrumb': breadcrumb(("Home", None)),
     })
 
 
 def create_team(request):
     if request.method == 'GET':
         form = TeamForm()
-        return render(request, "cuhasc/create_team.html", {'form': form})
+        return render(request, "cuhasc/create_team.html",
+                      {'form': form, 'breadcrumb': _create_team_breadcrumb()})
     elif request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
@@ -49,7 +54,8 @@ def create_team(request):
             response = redirect('show_team', id=team.id, token=team.token)
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
-        return render(request, "cuhasc/create_team.html", {'form': form})
+        return render(request, "cuhasc/create_team.html",
+                      {'form': form, 'breadcrumb': _create_team_breadcrumb()})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
@@ -66,31 +72,23 @@ def show_team(request, id, token):
         'team': team,
         'team_culture_profile_svg': svg,
         'sections_by_chapter': sections_by_chapter,
+        'breadcrumb': breadcrumb(("Home", reverse('home')), (team.name, None)),
     })
-
-
-def _matching_sections_by_chapter(team_profile: dict) -> dict[str, list[handbook.Section]]:
-    """The loaded Sections whose Trigger applies to this Team Culture Profile, grouped by
-    Chapter, in Chapter/Section filename order; Chapters with no matching Section are omitted."""
-    result: dict[str, list[handbook.Section]] = {}
-    for chapter, sections in handbook.get_sections_by_chapter().items():
-        matching = [s for s in sections if handbook.evaluate(s.trigger, team_profile)]
-        if matching:
-            result[chapter] = matching
-    return result
 
 
 def edit_team(request, id, token):
     team = get_object_or_404(Team, id=id, token=token)
     if request.method == 'GET':
         form = TeamForm(instance=team)
-        return render(request, "cuhasc/edit_team.html", {'form': form, 'team': team})
+        return render(request, "cuhasc/edit_team.html",
+                      {'form': form, 'team': team, 'breadcrumb': _edit_team_breadcrumb(team)})
     elif request.method == 'POST':
         form = TeamForm(request.POST, instance=team)
         if form.is_valid():
             form.save()
             return redirect('show_team', id=team.id, token=team.token)
-        return render(request, "cuhasc/edit_team.html", {'form': form, 'team': team})
+        return render(request, "cuhasc/edit_team.html",
+                      {'form': form, 'team': team, 'breadcrumb': _edit_team_breadcrumb(team)})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
@@ -104,7 +102,8 @@ def create_member(request, team_id, member_token):
         qform = QuestionnaireForm(instruments.get_questionnaire(language),
                                   instruments.get_scales(language))
         return render(request, "cuhasc/create_member.html",
-                      {'form': form, 'qform': qform, 'team': team, **_selector_context(language)})
+                      {'form': form, 'qform': qform, 'team': team,
+                       'breadcrumb': _create_member_breadcrumb(team), **_selector_context(language)})
     elif request.method == 'POST':
         switch = request.POST.get('switch_language')
         if switch is not None:
@@ -116,6 +115,7 @@ def create_member(request, team_id, member_token):
                                       initial=request.POST.dict())
             response = render(request, "cuhasc/create_member.html",
                               {'form': form, 'qform': qform, 'team': team,
+                               'breadcrumb': _create_member_breadcrumb(team),
                                **_selector_context(language)})
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
@@ -133,7 +133,8 @@ def create_member(request, team_id, member_token):
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
         return render(request, "cuhasc/create_member.html",
-                      {'form': form, 'qform': qform, 'team': team, **_selector_context(language)})
+                      {'form': form, 'qform': qform, 'team': team,
+                       'breadcrumb': _create_member_breadcrumb(team), **_selector_context(language)})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
@@ -144,13 +145,18 @@ def show_member(request, id, token):
     language = cookie.get_language() or 'en'
     profile = member.culture_profile()
     svg = mark_safe(culture_profile_svg(profile, language)) if profile else None
-    return render(request, "cuhasc/show_member.html", {'member': member, 'culture_profile_svg': svg})
+    member_breadcrumb = breadcrumb(("Home", reverse('home')), (member.team.name, None), (member.name, None))
+    return render(request, "cuhasc/show_member.html",
+                  {'member': member, 'culture_profile_svg': svg, 'breadcrumb': member_breadcrumb})
 
 
 def adminpage(request, token):
     get_object_or_404(AdminPage, token=token)
     teams = Team.objects.prefetch_related('members').all()
-    return render(request, "cuhasc/adminpage.html", {'teams': teams})
+    return render(request, "cuhasc/adminpage.html", {
+        'teams': teams,
+        'breadcrumb': breadcrumb(("Home", reverse('home')), ("Admin page", None)),
+    })
 
 
 def handbook_section(request, slug):
@@ -158,8 +164,10 @@ def handbook_section(request, slug):
     if section is None:
         raise Http404
     body_html = mark_safe(markdown.markdown(section.body))
+    section_breadcrumb = breadcrumb(("Home", reverse('home')), ("Handbook", None),
+                                     (section.chapter, None), (section.title, None))
     return render(request, "cuhasc/handbook_section.html",
-                  {'section': section, 'body_html': body_html})
+                  {'section': section, 'body_html': body_html, 'breadcrumb': section_breadcrumb})
 
 
 def handbook_image(request, filename):
@@ -181,7 +189,8 @@ def edit_member(request, id, token):
         qform = QuestionnaireForm(instruments.get_questionnaire(language),
                                   instruments.get_scales(language), initial=existing)
         return render(request, "cuhasc/edit_member.html",
-                      {'form': form, 'qform': qform, 'member': member, **_selector_context(language)})
+                      {'form': form, 'qform': qform, 'member': member,
+                       'breadcrumb': _edit_member_breadcrumb(member), **_selector_context(language)})
     elif request.method == 'POST':
         switch = request.POST.get('switch_language')
         if switch is not None:
@@ -193,6 +202,7 @@ def edit_member(request, id, token):
                                       initial=request.POST.dict())
             response = render(request, "cuhasc/edit_member.html",
                               {'form': form, 'qform': qform, 'member': member,
+                               'breadcrumb': _edit_member_breadcrumb(member),
                                **_selector_context(language)})
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
@@ -205,6 +215,53 @@ def edit_member(request, id, token):
             qform.save_results(member)
             return redirect('show_member', id=member.id, token=member.token)
         return render(request, "cuhasc/edit_member.html",
-                      {'form': form, 'qform': qform, 'member': member, **_selector_context(language)})
+                      {'form': form, 'qform': qform, 'member': member,
+                       'breadcrumb': _edit_member_breadcrumb(member), **_selector_context(language)})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+def _create_member_breadcrumb(team: Team) -> str:
+    return breadcrumb(("Home", reverse('home')), (team.name, None), ("Create member", None))
+
+
+def _create_team_breadcrumb() -> str:
+    return breadcrumb(("Home", reverse('home')), ("Create Team", None))
+
+
+def _edit_member_breadcrumb(member: Member) -> str:
+    return breadcrumb(("Home", reverse('home')), (member.team.name, None),
+                       (member.name, reverse('show_member', args=[member.id, member.token])),
+                       ("Edit", None))
+
+
+def _edit_team_breadcrumb(team: Team) -> str:
+    return breadcrumb(("Home", reverse('home')),
+                       (team.name, reverse('show_team', args=[team.id, team.token])),
+                       ("Edit", None))
+
+
+def _matching_sections_by_chapter(team_profile: dict) -> dict[str, list[handbook.Section]]:
+    """The loaded Sections whose Trigger applies to this Team Culture Profile, grouped by
+    Chapter, in Chapter/Section filename order; Chapters with no matching Section are omitted."""
+    result: dict[str, list[handbook.Section]] = {}
+    for chapter, sections in handbook.get_sections_by_chapter().items():
+        matching = [s for s in sections if handbook.evaluate(s.trigger, team_profile)]
+        if matching:
+            result[chapter] = matching
+    return result
+
+
+def _resolve_language(cookie) -> str:
+    """Questionnaire language for the initial render: cookie choice if still available,
+    else English. (HTTP Accept-Language detection is out of scope, see ADR-0002.)"""
+    lang = cookie.get_language()
+    return lang if lang in instruments.get_languages() else 'en'
+
+
+def _selector_context(language: str) -> dict:
+    """Template context for the questionnaire language selector."""
+    return {
+        'languages': i18n.language_options(instruments.get_languages()),
+        'current_language': i18n.language_options([language])[0],
+    }
