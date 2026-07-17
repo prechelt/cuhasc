@@ -1,7 +1,9 @@
 [tool.poetry]
 name = "cuhasc"
-version = "0.2.0"
-description = "A simple webapp with which software teams can determine their culture profile."
+version = "0.5.0"
+description = """Culture Handbook for Scrum and Agile.
+  A simple webapp with which software teams can determine their culture profile
+  and obtain descriptions of likely agile process execution problems that may result from it."""
 authors = ["Lutz Prechelt <prechelt@inf.fu-berlin.de>"]
 license = "MIT"
 readme = "README.md"
