@@ -3,7 +3,7 @@
 {% block title %}Edit Team "{"{ team.name }}{% endblock %}
 
 {% block content %}
-<h1>Edit Team {{ team.name }}</h1>
+<h1>Edit Team "{{ team.name }}"</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
