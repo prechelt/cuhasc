@@ -5,7 +5,7 @@ import cuhasc.instruments as instruments
 
 def test_get_dimension_name_ok():
     assert instruments.get_dimension_name('PO', 'en') == 'Power Distance'
-    assert instruments.get_dimension_name('PO', 'de') == 'Machtdistanz'
+    assert instruments.get_dimension_name('PO', 'de') == 'Machtdistanz / Power Distance'
 
 
 @pytest.mark.parametrize('language', ['en', 'de'])
