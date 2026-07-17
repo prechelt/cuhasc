@@ -3,7 +3,6 @@
 {% block title %}Join Team {{ team.name }}{% endblock %}
 
 {% block content %}
-{{ breadcrumb }}
 <h1>Join Team "{{ team.name }}"</h1>
 <form method="post">
     {% csrf_token %}
@@ -18,7 +17,7 @@
         {% endif %}
         <div class="d-flex flex-wrap gap-3">
             {% for radio in item_field %}
-            <div class="form-check form-check-inline">
+            <div class="form-check likert-option">
                 {{ radio.tag }}
                 <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
             </div>

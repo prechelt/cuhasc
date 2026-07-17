@@ -15,20 +15,21 @@ from cuhasc.models import AdminPage, Member, Team
 from cuhasc.plots import culture_profile_svg, team_culture_profile_svg
 
 BREADCRUMB_SEPARATOR = ' / '
-BREADCRUMB_STYLE = 'margin-bottom: 1.5ex;'
 
 
 def breadcrumb(*crumbs: tuple[str, str | None]) -> str:
     """A breadcrumb nav built from (label, url) pairs given root-first. A url of None
     renders that crumb as plain text (used for pages with no view to link to, and for
     labels that must not carry a confidential token, e.g. a Team's name on Member-facing
-    pages). The last crumb is always plain text, since it names the current page."""
+    pages). The last crumb is always plain text, since it names the current page.
+    Styling (the ``.crumb-nav`` class, its placement alongside the logo, and the
+    1.5ex margin below the bar) lives in cuhasc/static/cuhasc/style.css."""
     *ancestors, (current_label, _) = crumbs
     parts = [f'<a href="{escape(url)}">{escape(label)}</a>' if url else escape(label)
              for label, url in ancestors]
     parts.append(escape(current_label))
     html = BREADCRUMB_SEPARATOR.join(parts)
-    return mark_safe(f'<nav class="crumb-nav" style="{BREADCRUMB_STYLE}">{html}</nav>')
+    return mark_safe(f'<nav class="crumb-nav">{html}</nav>')
 
 
 def home(request):

@@ -21,16 +21,16 @@ def _svg_grid(parts: list[str], language: str) -> dict[str, float]:
     for score in range(1, 6):
         x = _score_to_x(score)
         parts.append(f'<text x="{x:.1f}" y="{_SVG_TOP - 8}" text-anchor="middle"'
-                     f' font-size="11" fill="#888">{score}</text>')
+                     f' font-size="11" fill="var(--cuhasc-chart-muted)">{score}</text>')
     rows: dict[str, float] = {}
     for i, code in enumerate(DIMENSION_ORDER):
         y = _SVG_TOP + i * _SVG_ROW_H + _SVG_ROW_H // 2
         rows[code] = y
         label = instruments.get_dimension_name(code, language)
         parts.append(f'<line x1="{_SVG_LEFT}" y1="{y}" x2="{_SVG_WIDTH - _SVG_RIGHT}" y2="{y}"'
-                     f' stroke="#aaa" stroke-width="1"/>')
+                     f' stroke="var(--cuhasc-chart-line)" stroke-width="1"/>')
         parts.append(f'<text x="{_SVG_LEFT - 10}" y="{y + 4}" text-anchor="end"'
-                     f' font-size="13" fill="#333">{label}</text>')
+                     f' font-size="13" fill="var(--cuhasc-chart-text)">{label}</text>')
     return rows
 
 
@@ -42,7 +42,7 @@ def culture_profile_svg(profile: dict[str, float], language: str) -> str:
     for code, y in rows.items():
         if code in profile:
             x = _score_to_x(profile[code])
-            parts.append(f'<circle cx="{x:.1f}" cy="{y}" r="8" fill="#0d6efd"/>')
+            parts.append(f'<circle cx="{x:.1f}" cy="{y}" r="8" fill="var(--cuhasc-blue)"/>')
     parts.append('</svg>')
     return '\n'.join(parts)
 
@@ -57,12 +57,12 @@ def team_culture_profile_svg(team_profile: dict, language: str) -> str:
         for code, score in member['profile'].items():
             y = rows[code]
             x = _score_to_x(score)
-            parts.append(f'<circle class="member-dot" cx="{x:.1f}" cy="{y}" r="4" fill="#6c757d"/>')
+            parts.append(f'<circle class="member-dot" cx="{x:.1f}" cy="{y}" r="4" fill="var(--cuhasc-orange)"/>')
             parts.append(f'<text class="member-label" x="{x:.1f}" y="{y - 8}" text-anchor="middle"'
-                         f' font-size="10" fill="#333" visibility="hidden">{member["name"]}</text>')
+                         f' font-size="10" fill="var(--cuhasc-chart-text)" visibility="hidden">{member["name"]}</text>')
     for code, score in team_profile['means'].items():
         y = rows[code]
         x = _score_to_x(score)
-        parts.append(f'<circle class="mean-dot" cx="{x:.1f}" cy="{y}" r="8" fill="#0d6efd"/>')
+        parts.append(f'<circle class="mean-dot" cx="{x:.1f}" cy="{y}" r="8" fill="var(--cuhasc-blue)"/>')
     parts.append('</svg>')
     return '\n'.join(parts)

@@ -1,0 +1,104 @@
+/* Accent palette, sourced from cuhasc-logo.svg, with dark-mode-adjusted tints. */
+:root {
+    --cuhasc-blue: #3E8FD0;
+    --cuhasc-blue-hover: #2f74ac;
+    --cuhasc-blue-active: #275f8c;
+    --cuhasc-orange: #EE7B54;
+    --cuhasc-gold: #F0B429;
+    --cuhasc-dim: #adb5bd;
+    --cuhasc-chart-text: #333;
+    --cuhasc-chart-muted: #888;
+    --cuhasc-chart-line: #aaa;
+}
+
+:root[data-bs-theme="dark"] {
+    --cuhasc-blue: #6fb0e6;
+    --cuhasc-blue-hover: #8cc0ec;
+    --cuhasc-blue-active: #a6cef1;
+    --cuhasc-orange: #f2916d;
+    --cuhasc-gold: #f5c65c;
+    --cuhasc-dim: #6c757d;
+    --cuhasc-chart-text: #dee2e6;
+    --cuhasc-chart-muted: #adb5bd;
+    --cuhasc-chart-line: #6c757d;
+}
+
+/* Bootstrap override: use the logo blue wherever Bootstrap used its stock primary blue. */
+a {
+    --bs-link-color: var(--cuhasc-blue);
+    --bs-link-hover-color: var(--cuhasc-blue-hover);
+    color: var(--bs-link-color);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--cuhasc-blue);
+    --bs-btn-border-color: var(--cuhasc-blue);
+    --bs-btn-hover-bg: var(--cuhasc-blue-hover);
+    --bs-btn-hover-border-color: var(--cuhasc-blue-hover);
+    --bs-btn-active-bg: var(--cuhasc-blue-active);
+    --bs-btn-active-border-color: var(--cuhasc-blue-active);
+    --bs-btn-disabled-bg: var(--cuhasc-blue);
+    --bs-btn-disabled-border-color: var(--cuhasc-blue);
+}
+
+/* Readable prose/plot measure: comfortably fits the 500px-wide plots with room to spare. */
+.container {
+    max-width: 56em !important;
+}
+
+/* Breadcrumb + logo bar (base.html) */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5ex;
+}
+
+.crumb-nav {
+    margin: 0;
+}
+
+.page-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+/* Questionnaire: Likert-style options, level label centered below its circle
+   (create_member.html, edit_member.html). Only the first/last levels of a scale
+   carry text (see instruments/scales-*.csv); the middle ones stay blank on purpose. */
+.likert-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    min-width: 4.5rem;
+    padding-left: 0;
+    text-align: center;
+}
+
+.likert-option .form-check-input {
+    float: none;
+    margin: 0;
+}
+
+.likert-option .form-check-label {
+    font-size: .8rem;
+    color: var(--cuhasc-dim);
+}
+
+.likert-option .form-check-input:not(:checked) {
+    border-color: var(--cuhasc-dim);
+    background-color: transparent;
+}
+
+.likert-option .form-check-input:checked {
+    background-color: var(--cuhasc-gold);
+    border-color: var(--cuhasc-gold);
+}
+
+.likert-option:has(.form-check-input:checked) .form-check-label {
+    color: var(--bs-body-color);
+    font-weight: 600;
+}
