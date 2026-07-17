@@ -28,5 +28,5 @@ of multiple (smaller) file changes.
 Commit only your own current changes, not others.
 Commit msg format: "mainfilename: #issue; short content description".
 Rarely two or three main files. 
-Expand content description to several lines only in rare critical cases.
-
+Expand content description to several lines only in rare complex cases;
+usually, the issue number should be enough for providing detail.
