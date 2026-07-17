@@ -59,12 +59,25 @@ def show_team(request, id, token):
     cookie = CuhascCookie(request)
     language = cookie.get_language() or 'en'
     team_profile = team.culture_profile()
-    svg = (mark_safe(team_culture_profile_svg(team_profile, language))
-           if team_profile['members'] else None)
+    has_profile = bool(team_profile['members'])
+    svg = mark_safe(team_culture_profile_svg(team_profile, language)) if has_profile else None
+    sections_by_chapter = _matching_sections_by_chapter(team_profile) if has_profile else None
     return render(request, "cuhasc/show_team.html", {
         'team': team,
         'team_culture_profile_svg': svg,
+        'sections_by_chapter': sections_by_chapter,
     })
+
+
+def _matching_sections_by_chapter(team_profile: dict) -> dict[str, list[handbook.Section]]:
+    """The loaded Sections whose Trigger applies to this Team Culture Profile, grouped by
+    Chapter, in Chapter/Section filename order; Chapters with no matching Section are omitted."""
+    result: dict[str, list[handbook.Section]] = {}
+    for chapter, sections in handbook.get_sections_by_chapter().items():
+        matching = [s for s in sections if handbook.evaluate(s.trigger, team_profile)]
+        if matching:
+            result[chapter] = matching
+    return result
 
 
 def edit_team(request, id, token):

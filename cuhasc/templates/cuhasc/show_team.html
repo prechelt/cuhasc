@@ -26,4 +26,18 @@
     });
 </script>
 {% endif %}
+
+{% if sections_by_chapter %}
+<div class="mt-4">
+    <h2>Handbook</h2>
+    {% for chapter, sections in sections_by_chapter.items %}
+    <h3>{{ chapter }}</h3>
+    <ul>
+        {% for section in sections %}
+        <li><a href="{% url 'handbook_section' section.slug %}">{{ section.title }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

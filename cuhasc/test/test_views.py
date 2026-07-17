@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 
 import cuhasc.constants as c
+import cuhasc.handbook as handbook
 import cuhasc.instruments as instruments
 from cuhasc.models import AdminPage, Member, QResult, Team
 
@@ -91,6 +92,46 @@ def test_show_team_member_labels_hidden_by_default(client, team_with_answers):
     assert 'class="member-label"' in content
     assert 'visibility="hidden"' in content
     assert 'type="checkbox"' in content
+
+
+# ---- show_team matching-Section list grouped by Chapter (issue #11) ----
+
+def write_section(tmp_path, filename: str, title: str = "A Title",
+                   trigger: str = "one-high(PO)", body: str = "Some body text.\n"):
+    path = tmp_path / filename
+    path.write_text(f"---\ntitle: {title}\ntrigger: {trigger}\n---\n{body}")
+    return path
+
+
+def test_show_team_lists_matching_section_grouped_by_chapter(client, team_with_answers, tmp_path):
+    # Alice=4, Bob=2 on PO: one-high(PO) matches, one-low(PO) matches too.
+    write_section(tmp_path, "dailystandup-a.md", title="Speak Up", trigger="one-high(PO)")
+    handbook.load_sections(str(tmp_path / '*.md'))
+    url = reverse('show_team', args=[team_with_answers.id, team_with_answers.token])
+    content = client.get(url).content.decode()
+    assert 'dailystandup' in content
+    assert 'Speak Up' in content
+    assert reverse('handbook_section', args=["dailystandup-a"]) in content
+
+
+def test_show_team_omits_non_matching_section(client, team_with_answers, tmp_path):
+    # no UN answers at all: no Predicate on UN can be true.
+    write_section(tmp_path, "dailystandup-a.md", title="Speak Up", trigger="one-high(UN)")
+    handbook.load_sections(str(tmp_path / '*.md'))
+    url = reverse('show_team', args=[team_with_answers.id, team_with_answers.token])
+    content = client.get(url).content.decode()
+    assert 'Speak Up' not in content
+
+
+def test_show_team_no_section_list_without_team_culture_profile(client, db, tmp_path):
+    write_section(tmp_path, "dailystandup-a.md", title="Speak Up", trigger="one-high(PO)")
+    handbook.load_sections(str(tmp_path / '*.md'))
+    team = Team.objects.create(name='Empty', token='TEAMTOKEN3')
+    Member.objects.create(name='Empty', token='EMPTYTKN03', team=team)  # no answers
+    url = reverse('show_team', args=[team.id, team.token])
+    content = client.get(url).content.decode()
+    assert 'Speak Up' not in content
+    assert '<h2>Handbook</h2>' not in content
 
 
 # ---- questionnaire language selector + switch-vs-submit (issue #4) ----
