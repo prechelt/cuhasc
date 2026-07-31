@@ -81,32 +81,81 @@ TODO: The handbook provides pointers to the specific research articles underlyin
     This involves some (reasonably simple) setup for each team member and 
     also uses the free tier of a commercial service.
 
+(TODO: decide technical approach, implement, then flesh out description)
+
 ### 3.0 Basic install
 
-(TODO: flesh out)
+(TODO: turn the following sketch into prose)
 
-- Python
-- pipx(?)
-- run: `python manage.py runserver 0.0.0.0:8037`
+- Install via `uv`, the recommended route on all three operating systems, because `uv` brings
+  its own Python: run the `uv` standalone installer, then `uv tool install cuhasc`.
+  Give the Windows PowerShell installer line and the Linux/macOS shell line.
+- Alternative for anyone who already has Python 3.12+ and `pipx`: `pipx install cuhasc`.
+- Start it with `cuhasc run`. It binds `0.0.0.0:8037` and prints the home URL, the LAN URL and
+  the admin-page URL.
+- Options: `--host`, `--port`, `--data-dir`, `--public-url`;
+  environment equivalents `CUHASC_HOME`, `CUHASC_PUBLIC_URL`.
+- The data directory `~/.cuhasc/` (same path on all three systems) holds `db.sqlite3` and
+  `secret_key` and is the *entire* application state. Back it up by copying it, or use
+  `cuhasc backup`. It survives upgrades and uninstalls.
+- There is no setup step: database migrations run automatically at every start.
+- Further subcommands: `cuhasc info`, `cuhasc adminpage`, `cuhasc backup`/`cuhasc restore`,
+  and `cuhasc manage ...` as an escape hatch into Django's own commands.
+- Upgrade with `uv tool upgrade cuhasc` (or `pipx upgrade cuhasc`).
+- Caveat worth stating once: the page layout comes from a CDN, so a machine without internet
+  access shows the app unstyled.
+
 
 ### 3.1 Running on a proper server
 
-(TODO: flesh out)
+(TODO: turn the following sketch into prose)
+
+- Simplest: `cuhasc run` with a reverse proxy (nginx, Caddy) in front that terminates TLS.
+  Cuhasc speaks plain HTTP only; encryption is always somebody else's job.
+- Alternative: serve `cuhasc.wsgi:application` under gunicorn or another WSGI server. Then
+  `CUHASC_HOME`, `CUHASC_SECRET_KEY` and `CUHASC_ALLOWED_HOSTS` must be set explicitly,
+  because `cuhasc run` is what otherwise supplies them.
+- Give a minimal systemd unit so the server survives a reboot.
+- One running instance per data directory: the database is SQLite.
 
 
 ### 3.2 Running on a developer machine in a joint LAN
 
-(TODO: flesh out)
+(TODO: turn the following sketch into prose)
+
+- `cuhasc run` and nothing else: it binds all interfaces on port 8037 by default.
+- Open the firewall for that port. On Windows the first start raises a Windows Defender
+  dialog; it must be allowed for *private* networks.
+- Hand the Team Members the "on this LAN" URL that the start-up banner prints.
+- No `--public-url` needed here: plain HTTP within one LAN needs no extra configuration.
 
 
 ### 3.3 Running on a developer machine via `cloudflared` or `ngrok` tunnel (--> temporary public server)
 
-(TODO: flesh out)
+(TODO: turn the following sketch into prose)
+
+- The order matters. First start the tunnel, which prints its public URL immediately:
+  `cloudflared tunnel --url http://localhost:8037` or `ngrok http 8037`.
+- Then start cuhasc with that URL:
+  `cuhasc run --host 127.0.0.1 --public-url https://<the-printed-url>`.
+- Explain why `--public-url` is not optional: the tunnel terminates TLS, so the browser
+  reports an https origin that Django does not recognise, and *every* form submission fails
+  with a 403 until the URL is declared.
+- Explain why `--host 127.0.0.1`: it keeps the app off the LAN when the tunnel is meant to be
+  the only way in.
+- Drawback to repeat here: the URL dies at the next reboot or standby. Both commands must then
+  be repeated and the new links sent out again.
+- https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/
 
 
 ### 3.4 Running on a developer machine via a `tailscale` network (--> semi-permanent group-private server)
 
-(TODO: flesh out)
+(TODO: turn the following sketch into prose)
+
+- Each Team Member installs tailscale and joins the tailnet; describe that setup once.
+- `cuhasc run --public-url http://<machine>.<tailnet>.ts.net:8037`.
+- The advantage over 3.3: the hostname is stable, so the links keep working across reboots.
+- Mention `tailscale serve` for those who want https within the tailnet.
 
 
 ## 4. Admin/superuser access
@@ -120,9 +169,24 @@ The page will show links to all objects in the database.
 
 ## 5. Next development steps
 
-- form: should the scale run right-to-left in a RTL language?
+Fallout from the big "deployment" implementation plan:
 
+### TODO in README: install section
 
+```
+ # Windows — no Python needed; uv brings its own
+ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+ uv tool install cuhasc
+ cuhasc run
+ # Linux / macOS
+ curl -LsSf https://astral.sh/uv/install.sh | sh     # or use pipx, if you have it
+ uv tool install cuhasc
+ cuhasc run
+```
+
+ Individual commands rather than a .ps1: a script you distribute needs unblocking or an execution-policy
+erride anyway, cannot be cheaply signed, and is opaque to the person running it — three visible
+ lines are auditable and far easier to support over email.
 
 ### TODO in README: other
 
