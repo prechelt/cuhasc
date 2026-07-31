@@ -22,6 +22,7 @@ django-crispy-forms = "^2.3"
 crispy-bootstrap5 = ">=2024.10"
 markdown = "^3.10"
 pyyaml = "^6.0.3"
+waitress = "^3.0"     # the HTTP server; pure Python, no dependencies, works on Windows too
 whitenoise = "^6.12"  # serves the static files once DEBUG is off; pure Python, no dependencies
 
 [tool.poetry.group.dev.dependencies]
@@ -29,6 +30,9 @@ pytest = "^9.0"
 pytest-cov = "^7.1"
 pytest-django = "^4.12"
 playwright = "^1.61.0"
+
+[tool.poetry.scripts]
+cuhasc = "cuhasc.cli:main"
 
 [build-system]
 requires = ["poetry-core"]
