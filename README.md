@@ -85,91 +85,97 @@ TODO: The handbook provides pointers to the specific research articles underlyin
 
 ### 3.0 Basic install
 
-(TODO: turn the following sketch into prose)
+This is required before each of the subsequent scenarios 3.1 to 3.4.
 
-- Install via `uv`, the recommended route on all three operating systems, because `uv` brings
-  its own Python: run the `uv` standalone installer, then `uv tool install cuhasc`.
-  Give the Windows PowerShell installer line and the Linux/macOS shell line.
-- Alternative for anyone who already has Python 3.12+ and `pipx`: `pipx install cuhasc`.
-- Start it with `cuhasc run`. It binds `0.0.0.0:8037` and prints the home URL, the LAN URL and
-  the admin-page URL.
-- Options: `--host`, `--port`, `--data-dir`, `--public-url`;
-  environment equivalents `CUHASC_HOME`, `CUHASC_PUBLIC_URL`.
-- The data directory `~/.cuhasc/` (same path on all three systems) holds `db.sqlite3` and
-  `secret_key` and is the *entire* application state. Back it up by copying it, or use
-  `cuhasc backup`. It survives upgrades and uninstalls.
-- There is no setup step: database migrations run automatically at every start.
-- Further subcommands: `cuhasc info`, `cuhasc adminpage`, `cuhasc backup`/`cuhasc restore`,
-  and `cuhasc manage ...` as an escape hatch into Django's own commands.
-- Upgrade with `uv tool upgrade cuhasc` (or `pipx upgrade cuhasc`).
-- Caveat worth stating once: the page layout comes from a CDN, so a machine without internet
-  access shows the app unstyled.
+1. Install the `uv` package manager as described here: https://docs.astral.sh/uv/getting-started/installation/
+   If you have some version of it already installed, that will likely work fine as well.
+2. `uv tool install cuhasc`
+3. Review the output of the following calls:
+   - `cuhasc --help`
+   - `cuhasc info`
+   - `cuhasc run --help`
+4. The DBMS is SQLite. This is built-in into Python, so no separate setup is needed at all.
+   There is no DB setup step, either. 
+   `cuhasc run` is how you start the webserver built into `cuhasc`  and you could do that now.
+5. The data directory `~/.cuhasc/` (same path on all OSs) holds the database file `db.sqlite3` and
+   the app-local `secret_key`. These files are the entire application state. 
+   Back it up by copying it (or use `cuhasc backup` for a DB backup). 
+   It survives upgrades and uninstalls.
+6. Upgrade `cuhasc` with `uv tool upgrade cuhasc` when desired.
+   Database migrations run automatically at every application start.
 
 
 ### 3.1 Running on a proper server
 
-(TODO: turn the following sketch into prose)
-
-- Simplest: `cuhasc run` with a reverse proxy (nginx, Caddy) in front that terminates TLS.
+- Simplest: `cuhasc run` as in the basic install, just on a server computer rather than a developer notebook.
+  Make sure the port you use is open in the server's firewall.
+- The professional variant: 
+  `cuhasc run` with a reverse proxy (Apache, nginx, ...) in front that terminates TLS.
   Cuhasc speaks plain HTTP only; encryption is always somebody else's job.
-- Alternative: serve `cuhasc.wsgi:application` under gunicorn or another WSGI server. Then
-  `CUHASC_HOME`, `CUHASC_SECRET_KEY` and `CUHASC_ALLOWED_HOSTS` must be set explicitly,
-  because `cuhasc run` is what otherwise supplies them.
-- Give a minimal systemd unit so the server survives a reboot.
-- One running instance per data directory: the database is SQLite.
+- Alternative: serve `cuhasc.wsgi:application` under gunicorn or another WSGI server.
+  Then `CUHASC_HOME` (default: `~/.cuhasc/`), 
+  `CUHASC_SECRET_KEY` (a fixed random string), and 
+  `CUHASC_ALLOWED_HOSTS` (comma-separated list of target hostnames allowed in requests)
+  must be set explicitly (because `cuhasc run` is what otherwise supplies them).
+  More complicated, hence recommended only if you have a good reason for it.
+
+Set up a minimal `systemd` unit so the server survives a reboot.
+
+Only one running instance is allowed per data directory.
 
 
 ### 3.2 Running on a developer machine in a joint LAN
 
-(TODO: turn the following sketch into prose)
-
 - `cuhasc run` and nothing else: it binds all interfaces on port 8037 by default.
-- Open the firewall for that port. On Windows the first start raises a Windows Defender
-  dialog; it must be allowed for *private* networks.
+- Open the firewall for that port. 
+  On Windows, the first start will raise a Windows Defender dialog; 
+  `cuhasc` must be allowed for *private* networks.
 - Hand the Team Members the "on this LAN" URL that the start-up banner prints.
 - No `--public-url` needed here: plain HTTP within one LAN needs no extra configuration.
+
+Be aware that everybody on this LAN can in principle read all traffic to and fro this server now.
 
 
 ### 3.3 Running on a developer machine via `cloudflared` or `ngrok` tunnel (--> temporary public server)
 
-(TODO: turn the following sketch into prose)
-
-- The order matters. First start the tunnel, which prints its public URL immediately:
+- Install `cloudflared`:
+  https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/  
+  We will use the 
+  ["trycloudflare" free tier](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/).
+- _First_ start the tunnel, which prints its public URL immediately:
   `cloudflared tunnel --url http://localhost:8037` or `ngrok http 8037`.
-- Then start cuhasc with that URL:
-  `cuhasc run --host 127.0.0.1 --public-url https://<the-printed-url>`.
-- Explain why `--public-url` is not optional: the tunnel terminates TLS, so the browser
-  reports an https origin that Django does not recognise, and *every* form submission fails
-  with a 403 until the URL is declared.
-- Explain why `--host 127.0.0.1`: it keeps the app off the LAN when the tunnel is meant to be
-  the only way in.
-- Drawback to repeat here: the URL dies at the next reboot or standby. Both commands must then
-  be repeated and the new links sent out again.
-- https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/
+- _Only then_ start cuhasc with that URL:
+  `cuhasc run --host 127.0.0.1 --public-url https://<the-printed-cloudflared-url>`.
+- `--public-url` is not optional: the tunnel terminates TLS, so the browser
+  reports an https origin that Django would otherwise not recognize, and every form submission 
+  would fail with a 403.  
+  `--host 127.0.0.1` keeps the app off the LAN because the tunnel is meant to be the only way in.
+
+This setup is great if all team members fill the questionnaire within the same half-day or so.
+It is inconvenient otherwise:
+The URL dies at the next reboot or standby of your "server" machine. 
+Both commands above must then be repeated and the hostname will have changed,
+so all links need to be sent out again.
+
+`ngrok` uses a similar concept, see here: https://ngrok.com/
 
 
 ### 3.4 Running on a developer machine via a `tailscale` network (--> semi-permanent group-private server)
 
-(TODO: turn the following sketch into prose)
+If you intend to use `cuhasc` for some longer time, this approach may be preferable.
+It requires more setup, but produces less hassle then.
 
-- Each Team Member installs tailscale and joins the tailnet; describe that setup once.
+- Each Team Member installs tailscale and joins the tailnet, see here:
+  https://tailscale.com/docs/how-to/quickstart
 - `cuhasc run --public-url http://<machine>.<tailnet>.ts.net:8037`.
-- The advantage over 3.3: the hostname is stable, so the links keep working across reboots.
-- Mention `tailscale serve` for those who want https within the tailnet.
+- In contrast to the `cloudflared` apporach, the hostname is stable, so the links keep working across reboots.
 
 
 ## 4. Admin/superuser access
 
 If you lost both your team-level URL and the cookie that stored it,
-you can retrieve the URL by calling 
-`python manage.py cuhasc-adminpage`.
-It will print the path part of a URL. Append this to the homepage URL in your browser URL bar.
-The page will show links to all objects in the database.
-
-
-## 5. Next development steps
-
-Fallout from the big "deployment" implementation plan:
+you can retrieve the URL by opening the "admin page" that is indicated in the 
+start message of any `cuhasc run` call.
 
 ### TODO in README: install section
 
