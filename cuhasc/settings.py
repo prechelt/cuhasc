@@ -42,11 +42,7 @@ if PUBLIC_URL.startswith('https://'):
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
+    # admin, auth, contenttypes, sessions, messages: unused, removed here (see git history)
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
@@ -59,11 +55,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # must come directly after SecurityMiddleware
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -77,8 +70,6 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -96,25 +87,6 @@ DATABASES = {
         'NAME': DATA_DIR / deployment.DB_FILE,
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 
 # Internationalization
@@ -137,6 +109,5 @@ STATIC_URL = '/static/'
 # Django serves static files itself only while DEBUG is on, so an installed deployment needs
 # WhiteNoise. In finders mode it serves them straight out of cuhasc/static/, which means there
 # is no collectstatic step at build time, at install time or at start-up -- and hence no
-# collected copy that could go stale. Appropriate because there are exactly three static files;
-# revisit if the assets ever grow enough for caching and compression to matter.
+# collected copy that could go stale. Appropriate because the asset set is small.
 WHITENOISE_USE_FINDERS = True
