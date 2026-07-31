@@ -7,6 +7,7 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cuhasc.settings')
+    os.environ.setdefault('CUHASC_DEBUG', '1')  # development default; manage.py exists only here
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
