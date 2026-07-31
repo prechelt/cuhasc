@@ -69,8 +69,10 @@ def show_team(request, id, token):
     has_profile = bool(team_profile['members'])
     svg = mark_safe(team_culture_profile_svg(team_profile, language)) if has_profile else None
     sections_by_chapter = _matching_sections_by_chapter(team_profile) if has_profile else None
+    member_url = reverse('create_member', args=[team.id, team.member_token])
     return render(request, "cuhasc/show_team.html", {
         'team': team,
+        'member_url': request.build_absolute_uri(member_url),
         'team_culture_profile_svg': svg,
         'sections_by_chapter': sections_by_chapter,
         'breadcrumb': breadcrumb(("Home", reverse('home')), (team.name, None)),
