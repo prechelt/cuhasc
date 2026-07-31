@@ -12,9 +12,29 @@ def init_member_token() -> str:
 
 class AdminPage(models.Model):
     """Singleton holding the token for the admin page, via which a Culture Lead can
-    recover the Team and Member links if the cookie is lost. Created and re-tokened by
-    the ``cuhasc-adminpage`` management command; only one instance ever exists."""
+    recover the Team and Member links if the cookie is lost. Created by ``cuhasc run``
+    and re-tokened by ``cuhasc adminpage``; only one instance ever exists."""
     token = models.CharField(max_length=c.TOKEN_LENGTH_ADMINPAGE)
+
+    @classmethod
+    def current(cls) -> 'AdminPage':
+        """The singleton, created with a fresh token if it does not exist yet.
+
+        Used at every server start, and therefore explicitly non-rotating: a new token on
+        each restart would invalidate the link a Culture Lead has saved.
+        """
+        adminpage = cls.objects.first()
+        if adminpage is None:
+            adminpage = cls.objects.create(token=base.random_token(c.TOKEN_LENGTH_ADMINPAGE))
+        return adminpage
+
+    @classmethod
+    def reset(cls) -> 'AdminPage':
+        """The singleton, with a freshly generated token, which invalidates the previous link."""
+        adminpage = cls.current()
+        adminpage.token = base.random_token(c.TOKEN_LENGTH_ADMINPAGE)
+        adminpage.save()
+        return adminpage
 
 
 class Team(models.Model):
