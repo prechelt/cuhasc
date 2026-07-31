@@ -1,9 +1,8 @@
 [tool.poetry]
 name = "cuhasc"
 version = "0.5.0"
-description = """Culture Handbook for Scrum and Agile.
-  A simple webapp with which software teams can determine their culture profile
-  and obtain descriptions of likely agile process execution problems that may result from it."""
+# Poetry requires a single-line description; the long text is taken from README.md.
+description = "Culture Handbook for Scrum and Agile: determine a team's culture profile and the agile process execution problems likely to result from it"
 authors = ["Lutz Prechelt <prechelt@inf.fu-berlin.de>"]
 license = "MIT"
 readme = "README.md"
@@ -23,6 +22,7 @@ django-crispy-forms = "^2.3"
 crispy-bootstrap5 = ">=2024.10"
 markdown = "^3.10"
 pyyaml = "^6.0.3"
+whitenoise = "^6.12"  # serves the static files once DEBUG is off; pure Python, no dependencies
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0"

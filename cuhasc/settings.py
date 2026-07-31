@@ -58,6 +58,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # must come directly after SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -132,3 +133,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Django serves static files itself only while DEBUG is on, so an installed deployment needs
+# WhiteNoise. In finders mode it serves them straight out of cuhasc/static/, which means there
+# is no collectstatic step at build time, at install time or at start-up -- and hence no
+# collected copy that could go stale. Appropriate because there are exactly three static files;
+# revisit if the assets ever grow enough for caching and compression to matter.
+WHITENOISE_USE_FINDERS = True
