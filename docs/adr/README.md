@@ -1,3 +1,5 @@
+# README.md for `docs/adr`
+
 ADR = Architecture Decision Record
 
 Documentation of non-local design decisions.
