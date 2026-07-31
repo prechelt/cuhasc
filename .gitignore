@@ -1,5 +1,6 @@
 # cuhasc
-handbook/
+# NOTE: do not ignore cuhasc/data/handbook/ -- poetry-core drops VCS-ignored files from the
+# wheel, so an ignored handbook would be shipped empty and the app would silently show no advice.
 instruments/YooDonLen11-CVscale-Hofstede-dimensions-for-individuals.pdf
 .last*.txt
 

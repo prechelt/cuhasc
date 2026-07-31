@@ -1,7 +1,9 @@
+import pathlib
 import re
 
 import pytest
 
+import cuhasc
 import cuhasc.constants as c
 import cuhasc.handbook as handbook
 import cuhasc.instruments as instruments
@@ -15,6 +17,14 @@ def profile_of(*scores: dict) -> dict:
         values = [m['profile'][dim] for m in members if dim in m['profile']]
         means[dim] = sum(values) / len(values)
     return {'members': members, 'means': means}
+
+
+def test_handbook_dir_lives_inside_the_package():
+    # Same packaging guard as for the questionnaires, but the handbook fails even more
+    # quietly: a wheel without Section files serves every page happily and simply never
+    # shows any advice -- which is the entire point of the application.
+    assert c.HANDBOOK_DIR.is_relative_to(pathlib.Path(cuhasc.__file__).parent)
+    assert c.HANDBOOK_DIR.is_dir()
 
 
 def test_evaluate_ok():
