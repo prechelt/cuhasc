@@ -1,5 +1,8 @@
+import pathlib
+
 import pytest
 
+import cuhasc
 import cuhasc.instruments as instruments
 
 
@@ -16,6 +19,15 @@ def test_get_dimension_name_has_all_five_dimensions(language):
         assert isinstance(name, str) and name, f"missing {language} name for {code}"
     assert set(instruments._dimensions[language]) == set(instruments.DIMENSIONS), \
         f"{language} dimensions file and DIMENSIONS disagree"
+
+
+def test_instruments_dir_lives_inside_the_package():
+    # Guards the packaging: an INSTRUMENTS_DIR outside the package makes an installed wheel
+    # find no questionnaires at all -- and silently, because glob() returns [] for a
+    # non-existent directory, so the failure only surfaces as KeyError on the first request.
+    assert instruments.INSTRUMENTS_DIR.is_relative_to(pathlib.Path(cuhasc.__file__).parent)
+    assert len(instruments.get_languages()) >= 40
+    assert 'en' in instruments.get_languages()
 
 
 def test_get_languages_requires_questionnaire_scales_and_dimensions(monkeypatch):

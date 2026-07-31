@@ -6,7 +6,7 @@ import glob as glob_module
 from dataclasses import dataclass
 from pathlib import Path
 
-INSTRUMENTS_DIR = Path(__file__).resolve().parent.parent / 'instruments'
+INSTRUMENTS_DIR = Path(__file__).resolve().parent / 'data' / 'instruments'
 
 DIMENSIONS: tuple[str, ...] = ('PO', 'UN', 'CO', 'LT', 'MA')  # the five Hofstede Dimensions
 
