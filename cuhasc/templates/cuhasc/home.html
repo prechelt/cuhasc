@@ -1,18 +1,45 @@
 {% extends "cuhasc/base.html" %}
 
 {% block content %}
-<h1>CuHaSc: Culture Handbook for Scrum</h1>
+<h1>CuHaSc: Culture Handbook for Scrum and Agile</h1>
 
-<h2>Teams</h2>
-<a href="{% url 'create_team' %}">Create new team</a>
+<h2>0. What is this?</h2>
+
+<p>
+    For background, see the 
+    <a href="https://github.com/prechelt/cuhasc/blob/main/README.md">README on GitHub</a>
+</p>
+
+<h2>1. How to use</h2>
+
+<ul>
+    <li>Create a Team.</li>
+    <li>Send the resulting members link to the team's members (typically by email).</li>
+    <li>Have each team member fill in the culture questionnaire in the language they know best.</li>
+    <li>Visit the team page. It will show the team's culture profile and show all those sections from the handbook that apply to a team with this profile.</li>
+    <li>Read those handbook sections together with the team and discuss how to apply them.</li>
+    <li>By applying the handbook sections' advice, overcome that part of your process execution issues that is due to culture effects.</li>
+</ul>
+<p>
+    To find the team page again, you need to remember its URL.
+    It is also stored in a cookie and will come up automatically on the home page for as long as that cookie lives.
+    If you lose the cookie and the URL, visit the adminpage (shown on the console upon 'cuhasc run') for retrieving them.
+</p>
+
+<h2>2. Your teams</h2>
+<ul>
 {% for team in teams %}
-<br><a href="{{ team.url }}">{{ team.name }}</a>
+    <li><a href="{{ team.url }}">{{ team.name }}</a></li>
 {% endfor %}
+</ul>
+<p><a href="{% url 'create_team' %}">Create new team</a></p>
 
 {% if members %}
-<h2>Team members</h2>
+<h2>3. Your entries as a team member</h2>
+<ul>
 {% for member in members %}
-<br><a href="{{ member.url }}">{{ member.name }}</a>
+    <li><a href="{{ member.url }}">{{ member.name }}</a></li>
 {% endfor %}
+</ul>
 {% endif %}
 {% endblock %}
