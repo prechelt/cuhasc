@@ -190,7 +190,6 @@ If that URL has leaked, you can set a random new one by calling
   Most skills are originally from `https://github.com/mattpocock/skills`, but several of these
   are modified. `translate-cvscale` is what produced the many translations of the questionnaire,
   `review-cvscale-translation` has been used only very little.
-- `.idea`: settings and state files of/for the PyCharm IDE. Otherwise of no interest. 
 - `cmd`: stand-alone helpers, e.g. shell scripts
 - `cuhasc`: the main tree. Contains the Django application, its static resources,
   the actual handbook data (`cuhasc/data/handbook/*`),
