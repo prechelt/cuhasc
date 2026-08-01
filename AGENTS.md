@@ -5,7 +5,7 @@ Find a project overview in README.md.
 
 ## Commands
 
-- Install deps: `poetry install`.
+- Install deps: `uv sync`.
 - Run the dev server: `python manage.py runserver` (uses `CUHASC_DEBUG=1` and a well-known
   dev secret key automatically; DB is `db.sqlite3` in the checkout root; migrations are not
   a separate step during development, but `manage.py runserver` doesn't auto-apply them --
@@ -19,6 +19,7 @@ Find a project overview in README.md.
 - Coverage: `pytest --cov=cuhasc --cov-report=term-missing`.
 - Django system checks: `python manage.py check` (and `--deploy`, whose four TLS warnings
   are expected -- see docs/adr/0003).
+- Make a release: see docs/RELEASING.md.
 
 Project-specific conventions:
 - Declare parameter and result types for functions, except duck-typed params or `None` results. 
