@@ -7,7 +7,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-# Distribution / packaging (poetry build output)
+# Distribution / packaging (uv build output)
 dist/
 
 # Unit test / coverage reports (pytest, coverage)
