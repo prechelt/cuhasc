@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 from django.urls import reverse
@@ -23,6 +24,11 @@ def team(db):
 def _full_answers(language='en'):
     """A complete, valid set of answers (every item -> '3') for the questionnaire."""
     return {item.item: '3' for item in instruments.get_questionnaire(language)}
+
+
+def _question_order(content: str) -> list[str]:
+    """Item codes (e.g. 'PO1') in the order they first appear in a rendered questionnaire."""
+    return list(dict.fromkeys(re.findall(r'name="([A-Z]{2}\d+)"', content)))
 
 
 def test_show_member_requires_correct_token(client, member):
@@ -167,6 +173,34 @@ def test_create_member_language_switch_preserves_answers_without_errors(client, 
     assert 'checked' in content                              # the entered PO1=4 stays selected
     assert 'errorlist' not in content                        # a switch surfaces no errors
     assert Member.objects.count() == 0                       # nothing saved on a switch
+
+
+def test_create_member_question_order_is_randomized_and_stable_across_language_switch(client, team):
+    original_order = [item.item for item in instruments.get_questionnaire('en')]
+    url = reverse('create_member', args=[team.id, team.member_token])
+    initial = client.get(url).content.decode()
+    seed = re.search(r'name="order_seed" value="(\w+)"', initial).group(1)
+    order_before = _question_order(initial)
+
+    switched = client.post(url, {'name': 'Alice', 'order_seed': seed, 'switch_language': 'de'}).content.decode()
+    order_after = _question_order(switched)
+
+    assert sorted(order_before) == sorted(original_order)   # same 26 items
+    assert order_before != original_order                   # but shuffled, not CSV order
+    assert order_before == order_after                       # stable across the language switch
+
+
+def test_edit_member_question_order_is_stable_per_member_and_differs_across_members(client, member, db):
+    url = reverse('edit_member', args=[member.id, member.token])
+    order_a = _question_order(client.get(url).content.decode())
+    order_a_again = _question_order(client.get(url).content.decode())
+    assert order_a == order_a_again                          # stable across repeated visits
+
+    other_team = Team.objects.create(name='OtherTeam', token='TEAMTOKEN2')
+    other = Member.objects.create(name='Bob', token='MEMBERTKN2', team=other_team)
+    order_b = _question_order(
+        client.get(reverse('edit_member', args=[other.id, other.token])).content.decode())
+    assert order_a != order_b                                 # differs per member
 
 
 def test_create_member_language_switch_sets_cookie(client, team):

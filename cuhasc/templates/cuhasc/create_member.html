@@ -6,6 +6,7 @@
 <h1>Join Team "{{ team.name }}"</h1>
 <form method="post">
     {% csrf_token %}
+    <input type="hidden" name="order_seed" value="{{ order_seed }}">
     {{ form.as_p }}
     {% include "cuhasc/_language_selector.html" %}
     <h2 class="mt-4">Questionnaire</h2>

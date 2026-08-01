@@ -3,6 +3,7 @@ Manages loading and providing the various language versions of the questionnaire
 """
 import csv
 import glob as glob_module
+import random
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -84,8 +85,17 @@ def get_languages() -> list[str]:
     return sorted(set(_scales.keys()) & set(_questionnaires.keys()) & set(_dimensions.keys()))
 
 
-def get_questionnaire(language: str) -> list[Item]:
-    return _questionnaires[language]
+def get_questionnaire(language: str, order_seed: str | None = None) -> list[Item]:
+    """The questionnaire Items, in presentation order. With ``order_seed`` given, the
+    Items are shuffled reproducibly (same seed -> same order), so callers can randomize
+    the order shown to a respondent while keeping it stable across requests (e.g. the
+    Member's token as seed, so one Member always sees the same order)."""
+    items = _questionnaires[language]
+    if order_seed is None:
+        return items
+    shuffled = items.copy()
+    random.Random(order_seed).shuffle(shuffled)
+    return shuffled
 
 
 def get_scales(language: str) -> dict:

@@ -30,6 +30,24 @@ def test_instruments_dir_lives_inside_the_package():
     assert 'en' in instruments.get_languages()
 
 
+def test_get_questionnaire_ok():
+    items = instruments.get_questionnaire('en')
+    assert [item.item for item in items[:2]] == ['PO1', 'PO2']  # CSV order, unshuffled
+
+
+def test_get_questionnaire_with_order_seed_has_expected_behavior():
+    original = [item.item for item in instruments.get_questionnaire('en')]
+    shuffled_a = [item.item for item in instruments.get_questionnaire('en', 'seed-a')]
+    shuffled_a_again = [item.item for item in instruments.get_questionnaire('en', 'seed-a')]
+    shuffled_b = [item.item for item in instruments.get_questionnaire('en', 'seed-b')]
+
+    assert sorted(shuffled_a) == sorted(original)          # same items, no gain/loss
+    assert shuffled_a != original                          # actually reordered
+    assert shuffled_a == shuffled_a_again                  # same seed -> same order
+    assert shuffled_a != shuffled_b                        # different seed -> different order
+    assert [item.item for item in instruments.get_questionnaire('en')] == original  # global untouched
+
+
 def test_get_languages_requires_questionnaire_scales_and_dimensions(monkeypatch):
     # 'fr' has questionnaire + scales but no dimensions file -> excluded;
     # 'it' has questionnaire + dimensions but no scales -> excluded.

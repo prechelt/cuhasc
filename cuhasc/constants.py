@@ -3,6 +3,7 @@ import pathlib
 TOKEN_LENGTH_TEAM = 11
 TOKEN_LENGTH_MEMBER = 10
 TOKEN_LENGTH_ADMINPAGE = 20
+ORDER_SEED_LENGTH = 8      # length of the (non-secret) seed used to randomize question order
 COOKIE_NAME = 'cuhasc'
 HIGH_CUTOFF: float = 4.0  # a Score at or above this is "high"
 LOW_CUTOFF: float = 2.0   # a Score at or below this is "low"

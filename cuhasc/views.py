@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
+import cuhasc.base as base
 import cuhasc.constants as c
 import cuhasc.handbook as handbook
 import cuhasc.i18n as i18n
@@ -101,30 +102,35 @@ def create_member(request, team_id, member_token):
     cookie = CuhascCookie(request)
     if request.method == 'GET':
         language = _resolve_language(cookie, request.headers)
+        order_seed = base.random_token(c.ORDER_SEED_LENGTH)
         form = MemberForm()
-        qform = QuestionnaireForm(instruments.get_questionnaire(language),
+        qform = QuestionnaireForm(instruments.get_questionnaire(language, order_seed),
                                   instruments.get_scales(language))
         return render(request, "cuhasc/create_member.html",
-                      {'form': form, 'qform': qform, 'team': team,
+                      {'form': form, 'qform': qform, 'team': team, 'order_seed': order_seed,
                        'breadcrumb': _create_member_breadcrumb(team), **_selector_context(language)})
     elif request.method == 'POST':
+        # Not a security token, just a shuffle seed handed back by the browser: generated
+        # fresh here on GET and round-tripped through a hidden field so one respondent
+        # keeps a stable question order across language switches (see instruments.get_questionnaire).
+        order_seed = request.POST.get('order_seed') or base.random_token(c.ORDER_SEED_LENGTH)
         switch = request.POST.get('switch_language')
         if switch is not None:
             language = switch if switch in instruments.get_languages() else 'en'
             cookie.set_language(language)
             form = MemberForm(initial={'name': request.POST.get('name', '')})
-            qform = QuestionnaireForm(instruments.get_questionnaire(language),
+            qform = QuestionnaireForm(instruments.get_questionnaire(language, order_seed),
                                       instruments.get_scales(language),
                                       initial=request.POST.dict())
             response = render(request, "cuhasc/create_member.html",
-                              {'form': form, 'qform': qform, 'team': team,
+                              {'form': form, 'qform': qform, 'team': team, 'order_seed': order_seed,
                                'breadcrumb': _create_member_breadcrumb(team),
                                **_selector_context(language)})
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
         language = _resolve_language(cookie, request.headers)
         form = MemberForm(request.POST)
-        qform = QuestionnaireForm(instruments.get_questionnaire(language),
+        qform = QuestionnaireForm(instruments.get_questionnaire(language, order_seed),
                                   instruments.get_scales(language), request.POST)
         if form.is_valid() and qform.is_valid():
             member = form.save(commit=False)
@@ -136,7 +142,7 @@ def create_member(request, team_id, member_token):
             response.set_cookie(c.COOKIE_NAME, cookie.cookietext)
             return response
         return render(request, "cuhasc/create_member.html",
-                      {'form': form, 'qform': qform, 'team': team,
+                      {'form': form, 'qform': qform, 'team': team, 'order_seed': order_seed,
                        'breadcrumb': _create_member_breadcrumb(team), **_selector_context(language)})
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
@@ -189,7 +195,7 @@ def edit_member(request, id, token):
         language = _resolve_language(cookie, request.headers)
         form = MemberForm(instance=member)
         existing = {qr.item: str(qr.value) for qr in member.qresults.all()}
-        qform = QuestionnaireForm(instruments.get_questionnaire(language),
+        qform = QuestionnaireForm(instruments.get_questionnaire(language, member.token),
                                   instruments.get_scales(language), initial=existing)
         return render(request, "cuhasc/edit_member.html",
                       {'form': form, 'qform': qform, 'member': member,
@@ -200,7 +206,7 @@ def edit_member(request, id, token):
             language = switch if switch in instruments.get_languages() else 'en'
             cookie.set_language(language)
             form = MemberForm(initial={'name': request.POST.get('name', member.name)})
-            qform = QuestionnaireForm(instruments.get_questionnaire(language),
+            qform = QuestionnaireForm(instruments.get_questionnaire(language, member.token),
                                       instruments.get_scales(language),
                                       initial=request.POST.dict())
             response = render(request, "cuhasc/edit_member.html",
@@ -211,7 +217,7 @@ def edit_member(request, id, token):
             return response
         language = _resolve_language(cookie, request.headers)
         form = MemberForm(request.POST, instance=member)
-        qform = QuestionnaireForm(instruments.get_questionnaire(language),
+        qform = QuestionnaireForm(instruments.get_questionnaire(language, member.token),
                                   instruments.get_scales(language), request.POST)
         if form.is_valid() and qform.is_valid():
             form.save()
