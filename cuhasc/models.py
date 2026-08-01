@@ -10,6 +10,10 @@ def init_member_token() -> str:
     return base.random_token(c.TOKEN_LENGTH_MEMBER)
 
 
+def init_order_seed() -> str:
+    return base.random_token(c.ORDER_SEED_LENGTH)
+
+
 class AdminPage(models.Model):
     """Singleton holding the token for the admin page, via which a Culture Lead can
     recover the Team and Member links if the cookie is lost. Created by ``cuhasc run``
@@ -71,6 +75,7 @@ class Member(models.Model):
     """One Team member."""
     name = models.CharField(max_length=100)
     token = models.CharField(max_length=c.TOKEN_LENGTH_MEMBER)
+    order_seed = models.CharField(max_length=c.ORDER_SEED_LENGTH, default=init_order_seed)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
 
     def save(self, *args, **kwargs):

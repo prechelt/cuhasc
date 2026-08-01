@@ -203,6 +203,20 @@ def test_edit_member_question_order_is_stable_per_member_and_differs_across_memb
     assert order_a != order_b                                 # differs per member
 
 
+def test_create_member_question_order_carries_into_edit_member(client, team):
+    url = reverse('create_member', args=[team.id, team.member_token])
+    initial = client.get(url).content.decode()
+    seed = re.search(r'name="order_seed" value="(\w+)"', initial).group(1)
+    order_at_creation = _question_order(initial)
+
+    client.post(url, {'name': 'Alice', 'order_seed': seed, **_full_answers('en')})
+    member = Member.objects.get(name='Alice')
+
+    order_at_edit = _question_order(
+        client.get(reverse('edit_member', args=[member.id, member.token])).content.decode())
+    assert order_at_edit == order_at_creation
+
+
 def test_create_member_language_switch_sets_cookie(client, team):
     url = reverse('create_member', args=[team.id, team.member_token])
     client.post(url, {'name': '', 'switch_language': 'de'})
