@@ -5,7 +5,10 @@
 {% block content %}
 <h1>Team "{{ team.name }}"</h1>
 <p><a href="{% url 'edit_team' team.id team.token %}">Change team name</a></p>
-<p>Share this link with your team members:</p>
+<p>
+    Share this link with your team members. 
+    Make sure they understand what they should do with it and why!
+</p>
 <a href="{{ member_url }}">{{ member_url }}</a>
 
 {% if team_culture_profile_svg %}
