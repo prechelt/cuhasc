@@ -70,9 +70,9 @@ class CuhascCookie:
         """List of Team objects stored in the cookie.
 
         Each Team has two extra properties added:
-          url     -- relative URL of the team's edit_team page
+          url     -- relative URL of the team's show_team page
           fullurl -- absolute URL (scheme + host + path) of the same page
-        Requires the edit_team URL to be registered; raises NoReverseMatch until then.
+        Requires the show_team URL to be registered; raises NoReverseMatch until then.
         """
         result = []
         for role in self._roles.values():
@@ -82,7 +82,7 @@ class CuhascCookie:
                 team = Team.objects.get(id=role.id, token=role.token)
             except Team.DoesNotExist:
                 continue
-            team.url = reverse('edit_team', args=[team.id, team.token])
+            team.url = reverse('show_team', args=[team.id, team.token])
             team.fullurl = self._request.build_absolute_uri(team.url)
             result.append(team)
         return result
