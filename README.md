@@ -4,9 +4,9 @@ A simple webapp with which agile software development teams can determine their 
 and receive advice on plausible agile process execution problems that may arise from it.
 
 Cuhasc is based on Python and Django. 
-It uses SQlite3 as the RDBMS and a built-in webserver (`waitress`) for HTTP
+It uses the built-in SQlite3 as the RDBMS and a built-in webserver (`waitress`) for HTTP
 in order to provide the simplest possible deyployment.
-The application itself is also kept very simple and provides only a modest level of security.
+The application itself is also kept very simple and provides only a minimal level of security.
 
 
 ## 1. How it works
@@ -26,7 +26,7 @@ The application itself is also kept very simple and provides only a modest level
 
 For the handbook content, see
 [cuhasc/data/handbook/](cuhasc/data/handbook/).
-Each file there is one examples of an agile process execution problem.
+Each file there discusses one kind of recurring culture-induced agile process execution problem.
 
 
 ## 2. The science behind it
@@ -207,6 +207,11 @@ Important top-level files:
 - `pyproject.toml`: Declaration of the package structure.
 
 
-## 6. Next development steps
+## 6. Development
 
-- README misses a Development section: dev install, running tests, running webserver
+See [AGENTS.md](AGENTS.md).
+
+
+## 7. Next development steps
+
+- ...
